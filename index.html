@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#efe6d3">
+<meta name="theme-color" content="#12122a">
 <meta name="color-scheme" content="light">
-<script>try{var _t=localStorage.getItem('stl-theme');if(_t)document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
+<script>try{var _t=localStorage.getItem('stl-theme');document.documentElement.setAttribute('data-theme',_t||'arcade')}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="São Thomé">
@@ -419,8 +419,8 @@ const TX={
  caderno:{kick:"nossa primeira viagem de casal",count:(n,t)=>`${n} de ${t} descobertos`,stamp:"JÁ FUI",want:"Quero ir",done:"Já fui",miniDone:"fui",miniWant:"quero",ok:"Comum / vale a pena",no:"Atenção / não rola",lore:"Lenda",nota:"Nota de nós dois",ph:"escreva uma lembrança depois de ir...",tips:"Dicas de quem já foi",go:"Até lá",visit:"Passeio",tDone:"Carimbado! Já fui",tWant:"Na lista de quero ir",on:"Modo caderno ligado"},
  arcade:{kick:"P1 + P2 · fase 1: a primeira viagem",count:(n,t)=>`LV${1+Math.floor(n/5)} · ${n}/${t} FASES · SCORE ${String(n*100).padStart(4,"0")}`,stamp:"LEVEL CLEAR!",want:"Próxima fase",done:"Fase concluída",miniDone:"clear!",miniWant:"next",ok:"Power-ups",no:"Chefões (atenção)",lore:"Lore (a lenda)",nota:"Chat do P1 e P2",ph:"mensagem de vocês dois nessa fase...",tips:"Tutorial: dicas",go:"Até a fase",visit:"Duração da fase",tDone:"KA-POW! +100 pontos",tWant:"Próxima fase marcada",on:"PLAYER 1 START! Modo arcade"},
  gibi:{kick:"edição nº 1 · a primeira aventura do casal",count:(n,t)=>`${n} de ${t} missões cumpridas`,stamp:"MISSÃO CUMPRIDA!",want:"Próxima missão",done:"Missão cumprida",miniDone:"feito!",miniWant:"próxima",ok:"Superpoderes (vale a pena)",no:"Vilões (atenção)",lore:"Origem (a lenda)",nota:"Balão de fala dos dois",ph:"o que vocês disseram nessa cena...",tips:"Manual do herói",go:"Deslocamento",visit:"Duração da missão",tDone:"POW! Missão cumprida!",tWant:"Próxima missão marcada!",on:"POW! Modo gibi ligado"}};
-let THEME="caderno";try{THEME=localStorage.getItem("stl-theme")||"caderno"}catch(e){}
-if(!COLS[THEME])THEME="caderno";
+let THEME="arcade";try{THEME=localStorage.getItem("stl-theme")||"arcade"}catch(e){}
+if(!COLS[THEME])THEME="arcade";
 let COL=COLS[THEME];const tx=()=>TX[THEME];
 const G={
 all:'<path d="M12 3l2.5 6 6.5.5-5 4.3 1.6 6.4L12 17l-5.6 3.2L8 13.8 3 9.5 9.5 9Z"/>',
