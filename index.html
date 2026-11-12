@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#efe6d3">
+<meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="São Thomé">
@@ -15,7 +16,7 @@
 <style>
 @font-face{font-family:'Caveat';font-weight:600;font-display:swap;src:url(fonts/caveat.woff2) format('woff2')}
 @font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(fonts/specialelite.woff2) format('woff2')}
-:root{--paper:#efe6d3;--paper2:#f6efe0;--ink:#2a2420;--mut:#6b5f55;--stone:#c9a9a0;--ocre:#b8782f;--fog:#6f8a9a;--neon:#ff3d8b;--moss:#4f6b3a;--stamp:#b3261e;
+:root{color-scheme:light;--paper:#efe6d3;--paper2:#f6efe0;--ink:#2a2420;--mut:#6b5f55;--stone:#c9a9a0;--ocre:#b8782f;--fog:#6f8a9a;--neon:#ff3d8b;--moss:#4f6b3a;--stamp:#b3261e;
 --type:'Special Elite','Courier New',monospace;--hand:'Caveat','Segoe Print','Bradley Hand',cursive}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font:15px/1.45 var(--type)}
@@ -290,7 +291,7 @@ const dist=p=>p.ll?km(pos||CHALE,p.ll):null;
 const from=()=>pos?"de você":"do chalé";
 function eta(p){if(!p.ll)return p.m?{m:p.m,mode:"de carro",ref:"do centro"}:null;const d=dist(p);
  if(d<1.2)return{m:Math.max(2,Math.round(d*13)),mode:"a pé",ref:from()};
- const v=BAD.includes(p.id)?20:35;return{m:Math.max(5,Math.round(d*1.5/v*12)*5),mode:"de carro",ref:from()}}
+ const v=BAD.includes(p.id)?28:35;return{m:Math.max(5,Math.round(d*1.5/v*12)*5),mode:"de carro",ref:from()}}
 function tempoShort(p){const e=eta(p);return (e?" · ~"+e.m+" min "+e.mode:"")+(p.t?" · visita ~"+p.t:"")}
 function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>Até lá: ~${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>Passeio: ~${esc(p.t)}</span>`:""}</div>`}
 const fmt=k=>k<1?Math.round(k*1000)+" m":k.toFixed(1).replace(".",",")+" km";
@@ -351,11 +352,14 @@ function openSheet(id,keep){
  document.getElementById("nota").oninput=e=>{notes[id]=e.target.value;save()};
  if(!keep)sh.scrollTop=0;
  sh.classList.add("open");
- if(!sheetOpen){sheetOpen=true;try{history.pushState({s:1},"")}catch(e){}}
+ sheetOpen=true;
+ if(!guardOn){guardOn=true;try{history.pushState({g:1},"")}catch(e){guardOn=false}}
 }
-function closeSheet(fromPop){document.getElementById("sheet").classList.remove("open");
- if(sheetOpen){sheetOpen=false;if(fromPop!==true){try{history.back()}catch(e){}}}}
-addEventListener("popstate",()=>{if(sheetOpen)closeSheet(true)});
+/* Histórico: 1 entrada "guarda" por abertura de ficha, criada só por toque do usuário. Fechar pelo X NÃO mexe no histórico (evita corridas). */
+let guardOn=false;
+function closeSheet(){document.getElementById("sheet").classList.remove("open");sheetOpen=false}
+addEventListener("popstate",()=>{const was=guardOn;guardOn=false;
+ if(sheetOpen){closeSheet()}else if(was){try{history.back()}catch(e){}}});
 function mark(id,v){const was=st(id)===v;if(was)delete status[id];else status[id]={s:v,d:new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};save();render();openSheet(id,true);
  toast(was?"Desmarcado":v==="fui"?"Carimbado! Já fui":"Na lista de quero ir")}
 

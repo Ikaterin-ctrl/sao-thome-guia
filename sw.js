@@ -1,4 +1,4 @@
-const V="stl-v9", TILES="stl-tiles-v1", MAXT=900;
+const V="stl-v10", TILES="stl-tiles-v1", MAXT=900;
 const CORE=["./","index.html","manifest.webmanifest","icon.svg","icon-180.png","icon-192.png","icon-512.png","lib/leaflet.js","lib/leaflet.css","lib/markercluster.js","fonts/caveat.woff2","fonts/specialelite.woff2"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&x!==TILES).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
