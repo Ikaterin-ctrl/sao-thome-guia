@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="lib/leaflet.css">
 <style>
 @font-face{font-family:'Caveat';font-weight:600;font-display:swap;src:url(fonts/caveat.woff2) format('woff2')}
+@font-face{font-family:'Press Start 2P';font-weight:400;font-display:swap;src:url(fonts/pressstart.woff2) format('woff2')}
+@font-face{font-family:'VT323';font-weight:400;font-display:swap;src:url(fonts/vt323.woff2) format('woff2')}
 @font-face{font-family:'Bangers';font-weight:400;font-display:swap;src:url(fonts/bangers.woff2) format('woff2')}
 @font-face{font-family:'Comic Neue';font-weight:400 700;font-display:swap;src:url(fonts/comicneue.woff2) format('woff2')}
 @font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(fonts/specialelite.woff2) format('woff2')}
@@ -187,6 +189,74 @@ html[data-theme=gibi] .leaflet-bar a{border-radius:0!important;background:#fff!i
  html[data-theme=gibi] header h1{font-size:26px;margin-top:6px}
  html[data-theme=gibi] #loc{font-size:15px;padding:9px 8px}
 }
+/* ====== TEMA ARCADE (alternativo): videogame pixel, HUD, fases e pontuação ====== */
+html[data-theme=arcade]{--paper:#12122a;--paper2:#22224a;--ink:#ffffff;--mut:#b9b9e8;--ocre:#ffe14d;--fog:#25e0ff;--neon:#ff4d8d;--moss:#6bff6b;--stamp:#ff4d8d;--hand:'Press Start 2P','Courier New',monospace;--type:'VT323','Courier New',monospace}
+html[data-theme=arcade] body{background-color:#12122a;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:16px 16px;font-size:20px;line-height:1.15;color:#fff}
+html[data-theme=arcade] body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3000;background:repeating-linear-gradient(transparent 0 2px,#00000022 2px 3px)}
+html[data-theme=arcade] .kicker{background:#ff4d8d;color:#000;border:3px solid #fff;padding:3px 6px;font:400 8px/1.4 var(--hand);display:inline-block;transform:none;box-shadow:3px 3px 0 #000}
+html[data-theme=arcade] header h1{font:400 15px/1.5 var(--hand);color:#fff;background:none;text-shadow:3px 3px 0 #ff4d8d,6px 6px 0 #000;margin-top:8px;letter-spacing:0}
+html[data-theme=arcade] #count{font:400 20px/1 var(--type);color:#6bff6b;white-space:normal}
+html[data-theme=arcade] .prog{height:14px;border:3px solid #fff;background:#000;border-radius:0}
+html[data-theme=arcade] .prog i{background:repeating-linear-gradient(90deg,#6bff6b 0 8px,transparent 8px 10px)}
+html[data-theme=arcade] #loc{background:#ff4d8d;color:#000;border:3px solid #fff;border-radius:0;font:400 9px var(--hand);box-shadow:3px 3px 0 #000;padding:9px 8px;white-space:nowrap}
+html[data-theme=arcade] #help,html[data-theme=arcade] #theme{border:3px solid #fff;background:#ffe14d;color:#000;border-radius:0;box-shadow:3px 3px 0 #000;font:400 12px var(--hand)}
+html[data-theme=arcade] .chip{border:3px solid #fff;border-radius:0;font:400 9px var(--hand);background:#22224a;color:#fff;box-shadow:3px 3px 0 #000;padding:0 10px}
+html[data-theme=arcade] .chip.on{background:var(--c);color:#000}
+html[data-theme=arcade] .chip.on svg{color:#000}
+html[data-theme=arcade] #mapwrap{border:4px solid #fff;box-shadow:5px 5px 0 #000;border-radius:0;background:#000}
+html[data-theme=arcade] #map{background:#0b0b1c}
+html[data-theme=arcade] .tiles{filter:invert(1) hue-rotate(180deg) saturate(.75) brightness(.9) contrast(1.1)}
+html[data-theme=arcade] #mapwrap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:450;background:repeating-linear-gradient(transparent 0 2px,#00000030 2px 3px)}
+html[data-theme=arcade] .page{background:#22224a;color:#fff;border:3px solid #fff;border-radius:0;box-shadow:5px 5px 0 #000;transform:none;padding-left:22px}
+html[data-theme=arcade] .page::before{left:0;top:0;bottom:0;width:10px;height:auto;transform:none;opacity:1;background:var(--c)}
+html[data-theme=arcade] .page .t{font-size:20px}
+html[data-theme=arcade] .page .t b{font:400 10px/1.6 var(--hand)}
+html[data-theme=arcade] .page .s{font-size:19px;color:#b9b9e8}
+html[data-theme=arcade] .page.tips{--c:#ffe14d}
+html[data-theme=arcade] .dist{font:400 10px var(--hand);color:#ffe14d}
+html[data-theme=arcade] .mini{font:400 9px var(--hand);background:#ffe14d;color:#000;border:3px solid #fff;transform:none;padding:3px 5px}
+html[data-theme=arcade] .mini.q{background:#25e0ff}
+html[data-theme=arcade] .road{border-color:#ff4d8d;color:#ff4d8d;font-size:16px}
+html[data-theme=arcade] .tag{background:var(--c);color:#000;border:3px solid #fff;box-shadow:3px 3px 0 #000;border-radius:0;transform:none}
+html[data-theme=arcade] .tag.done{background:#ffe14d}
+html[data-theme=arcade] .tag.want{outline:3px dashed #25e0ff}
+html[data-theme=arcade] .tag.home{background:#ff4d8d}
+html[data-theme=arcade] .mc{background:#ff4d8d;color:#000;border:3px solid #fff;border-radius:0;font:400 11px var(--hand);box-shadow:3px 3px 0 #000}
+html[data-theme=arcade] .me{border-radius:0;background:#25e0ff;border:3px solid #fff;box-shadow:0 0 0 2px #000}
+html[data-theme=arcade] .me::after{border-radius:0;border-color:#25e0ff}
+html[data-theme=arcade] .me i{background:#25e0ff;color:#000;font:400 9px var(--hand);border-radius:0;padding:3px 4px;left:30px}
+html[data-theme=arcade] #sheet{background-color:#12122a;color:#fff;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:16px 16px;border-top:6px solid var(--c);box-shadow:0 -4px 0 #000;font-size:21px}
+html[data-theme=arcade] #sheet h2{font:400 14px/1.6 var(--hand);color:#fff;background:none;text-shadow:3px 3px 0 var(--c);display:block;margin-right:44px}
+html[data-theme=arcade] #sheet .x{border:3px solid #fff;background:#ff4d8d;color:#000;border-radius:0}
+html[data-theme=arcade] h3{font:400 10px/1.6 var(--hand);margin:16px 0 4px}
+html[data-theme=arcade] .meta,html[data-theme=arcade] .note{color:#b9b9e8;font-size:18px}
+html[data-theme=arcade] .stamp{font:400 11px/1.4 var(--hand);background:#ff4d8d;color:#000;border:3px solid #fff;box-shadow:4px 4px 0 #000;transform:rotate(-6deg);opacity:1;padding:6px 8px;right:60px}
+html[data-theme=arcade] .stamp small{font:400 16px var(--type)}
+html[data-theme=arcade] .btn{border:3px solid #fff;border-radius:0;font:400 9px/1.4 var(--hand);box-shadow:3px 3px 0 #000;background:#22224a;color:#fff}
+html[data-theme=arcade] #sheet .btn.go,html[data-theme=arcade] #peek .btn.go{background:var(--c);color:#000}
+html[data-theme=arcade] .btn.on{background:#25e0ff;color:#000}
+html[data-theme=arcade] .btn.fui.on{background:#6bff6b;color:#000}
+html[data-theme=arcade] .tempo span{border:2px solid #ffe14d;background:#000;color:#ffe14d;font-size:19px}
+html[data-theme=arcade] textarea{background:#000;color:#6bff6b;border:3px solid #6bff6b;font:400 20px/1.1 var(--type);border-radius:0}
+html[data-theme=arcade] #peek{background:#22224a;color:#fff;border:3px solid #fff;border-radius:0;box-shadow:5px 5px 0 #000}
+html[data-theme=arcade] #peek .t{font:400 11px/1.5 var(--hand)}
+html[data-theme=arcade] #peek .s{font-size:18px}
+html[data-theme=arcade] #peek .x{border:3px solid #fff;background:#ff4d8d;color:#000;border-radius:0}
+html[data-theme=arcade] #toast{background:#ffe14d;color:#000;border:3px solid #fff;border-radius:0;font:400 11px/1.5 var(--hand);box-shadow:4px 4px 0 #000;padding:10px 12px}
+html[data-theme=arcade] #me{background:#ff4d8d;border:3px solid #fff;border-radius:0;box-shadow:3px 3px 0 #000}
+html[data-theme=arcade] .mapbtns button{border:3px solid #fff;border-radius:0;font:400 9px var(--hand);background:#ffe14d;color:#000;box-shadow:3px 3px 0 #000}
+html[data-theme=arcade] .leaflet-bar{border-color:#fff!important}
+html[data-theme=arcade] .leaflet-bar a{border-radius:0!important;background:#22224a!important;color:#fff!important}
+html[data-theme=arcade] .leaflet-control-attribution{background:#000a!important;color:#b9b9e8!important}
+html[data-theme=arcade] .leaflet-control-attribution a{color:#25e0ff!important}
+@media (max-width:420px){
+ html[data-theme=arcade] header{flex-wrap:wrap;align-items:flex-start;gap:6px}
+ html[data-theme=arcade] header>div:first-child{flex:1 1 100%}
+ html[data-theme=arcade] .top-r{flex:1 1 100%;flex-direction:row;justify-content:space-between;align-items:center}
+ html[data-theme=arcade] #count{flex:1 1 auto;min-width:0;font-size:18px}
+ html[data-theme=arcade] .hbtns{flex:none}
+ html[data-theme=arcade] header h1{font-size:12px}
+}
 </style>
 
 
@@ -343,9 +413,11 @@ const save=()=>{try{localStorage.setItem("stl-status2",JSON.stringify(status));l
 const BAD=["shangrila","bromelias","esmeraldas","amendoim","labirinto","gsobradinho","sobradinho","quitanda"];
 const COLS={
  caderno:{mistico:"#8e6aa8",mirante:"#c9822f",gruta:"#6f6a63",agua:"#4a7f94",comer:"#5f7a3c",cafe:"#a0522d",bar:"#d23a7a",all:"#2a2420"},
+ arcade:{mistico:"#b06bff",mirante:"#ff8a00",gruta:"#8a93b8",agua:"#25e0ff",comer:"#6bff6b",cafe:"#e8a15c",bar:"#ff4d8d",all:"#ffffff"},
  gibi:{mistico:"#8a2be2",mirante:"#ff8c00",gruta:"#444b5a",agua:"#0a86e8",comer:"#17a34a",cafe:"#c1440e",bar:"#e6197a",all:"#111111"}};
 const TX={
  caderno:{kick:"nossa primeira viagem de casal",count:(n,t)=>`${n} de ${t} descobertos`,stamp:"JÁ FUI",want:"Quero ir",done:"Já fui",miniDone:"fui",miniWant:"quero",ok:"Comum / vale a pena",no:"Atenção / não rola",lore:"Lenda",nota:"Nota de nós dois",ph:"escreva uma lembrança depois de ir...",tips:"Dicas de quem já foi",go:"Até lá",visit:"Passeio",tDone:"Carimbado! Já fui",tWant:"Na lista de quero ir",on:"Modo caderno ligado"},
+ arcade:{kick:"P1 + P2 · fase 1: a primeira viagem",count:(n,t)=>`LV${1+Math.floor(n/5)} · ${n}/${t} FASES · SCORE ${String(n*100).padStart(4,"0")}`,stamp:"LEVEL CLEAR!",want:"Próxima fase",done:"Fase concluída",miniDone:"clear!",miniWant:"next",ok:"Power-ups",no:"Chefões (atenção)",lore:"Lore (a lenda)",nota:"Chat do P1 e P2",ph:"mensagem de vocês dois nessa fase...",tips:"Tutorial: dicas",go:"Até a fase",visit:"Duração da fase",tDone:"KA-POW! +100 pontos",tWant:"Próxima fase marcada",on:"PLAYER 1 START! Modo arcade"},
  gibi:{kick:"edição nº 1 · a primeira aventura do casal",count:(n,t)=>`${n} de ${t} missões cumpridas`,stamp:"MISSÃO CUMPRIDA!",want:"Próxima missão",done:"Missão cumprida",miniDone:"feito!",miniWant:"próxima",ok:"Superpoderes (vale a pena)",no:"Vilões (atenção)",lore:"Origem (a lenda)",nota:"Balão de fala dos dois",ph:"o que vocês disseram nessa cena...",tips:"Manual do herói",go:"Deslocamento",visit:"Duração da missão",tDone:"POW! Missão cumprida!",tWant:"Próxima missão marcada!",on:"POW! Modo gibi ligado"}};
 let THEME="caderno";try{THEME=localStorage.getItem("stl-theme")||"caderno"}catch(e){}
 if(!COLS[THEME])THEME="caderno";
@@ -371,12 +443,13 @@ const meMarker=L.marker(CENTER,{icon:L.divIcon({className:"",html:'<div class="m
 function km(a,b){const R=6371,t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]);
  const h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
 const dist=p=>p.ll?km(pos||CHALE,p.ll):null;
+const AP=()=>THEME==="arcade"?"±":"~";
 const from=()=>pos?"de você":"do chalé";
 function eta(p){if(!p.ll)return p.m?{m:p.m,mode:"de carro",ref:"do centro"}:null;const d=dist(p);
  if(d<1.2)return{m:Math.max(2,Math.round(d*13)),mode:"a pé",ref:from()};
  const v=BAD.includes(p.id)?28:35;return{m:Math.max(5,Math.round(d*1.5/v*12)*5),mode:"de carro",ref:from()}}
-function tempoShort(p){const e=eta(p);return (e?" · ~"+e.m+" min "+e.mode:"")+(p.t?" · visita ~"+p.t:"")}
-function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>${tx().go}: ~${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>${tx().visit}: ~${esc(p.t)}</span>`:""}</div>`}
+function tempoShort(p){const e=eta(p);return (e?" · "+AP()+e.m+" min "+e.mode:"")+(p.t?" · visita "+AP()+p.t:"")}
+function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>${tx().go}: ${AP()}${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>${tx().visit}: ${AP()}${esc(p.t)}</span>`:""}</div>`}
 const fmt=k=>k<1?Math.round(k*1000)+" m":k.toFixed(1).replace(".",",")+" km";
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const st=id=>status[id]&&status[id].s;
@@ -508,9 +581,10 @@ document.getElementById("ctr").onclick=()=>map.setView(CENTER,15);
 function applyTheme(n,quiet){THEME=n;COL=COLS[n];document.documentElement.setAttribute("data-theme",n);
  try{localStorage.setItem("stl-theme",n)}catch(e){}
  document.querySelector(".kicker").textContent=tx().kick;
- const m=document.querySelector("meta[name=theme-color]");if(m)m.content=n==="gibi"?"#fff3c4":"#efe6d3";
+ const m=document.querySelector("meta[name=theme-color]");if(m)m.content={caderno:"#efe6d3",gibi:"#fff3c4",arcade:"#12122a"}[n];
  closeSheet();closePeek();buildChips();render();if(!quiet)toast(tx().on)}
-document.getElementById("theme").onclick=()=>applyTheme(THEME==="gibi"?"caderno":"gibi");
+const THEMES=["caderno","gibi","arcade"];
+document.getElementById("theme").onclick=()=>applyTheme(THEMES[(THEMES.indexOf(THEME)+1)%THEMES.length]);
 applyTheme(THEME,true);
 locate(true);
 const fixMap=()=>map.invalidateSize();addEventListener("resize",fixMap);addEventListener("orientationchange",()=>setTimeout(fixMap,300));addEventListener("pageshow",fixMap);[200,800,2000].forEach(t=>setTimeout(fixMap,t));
