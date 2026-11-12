@@ -211,17 +211,16 @@ html[data-theme=arcade] .leaflet-control-attribution a{color:#25e0ff!important}
  html[data-theme=arcade] header h1{font-size:12px}
 }
 /* ---- carinha ---- */
-html[data-theme=arcade] .me.av{width:40px;height:40px;background:#fff;border:3px solid #fff;box-shadow:0 0 0 2px #000,3px 3px 0 #000;display:flex;align-items:center;justify-content:center}
-html[data-theme=arcade] .me.av svg{display:block;width:34px;height:34px;background:#22224a}
-html[data-theme=arcade] .me.av i{left:48px;top:8px}
+html[data-theme=arcade] .me.av{width:44px;height:44px;background:#22224a;border:3px solid #fff;box-shadow:0 0 0 2px #000,3px 3px 0 #000;display:flex;align-items:center;justify-content:center;overflow:visible}
+html[data-theme=arcade] .me.av img{display:block;width:38px;height:38px;image-rendering:auto;pointer-events:none}
+html[data-theme=arcade] .me.av i{left:52px;top:10px}
 html[data-theme=arcade] .me.av::after{inset:-10px}
 #sheet .meta{margin-right:50px}
-.avprev{display:flex;justify-content:center;margin:14px 0}
-.avprev svg{border:3px solid #fff;background:#22224a;box-shadow:4px 4px 0 #000}
-.swrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
-.sw{width:44px;height:44px;border:3px solid #fff;border-radius:0;box-shadow:3px 3px 0 #000;padding:0}
-.sw.on{outline:3px solid #ffe14d;outline-offset:2px}
-.opt{min-height:44px;padding:0 12px;border:3px solid #fff;background:#22224a;color:#fff;font:400 9px var(--hand);border-radius:0;box-shadow:3px 3px 0 #000}
+.charrow{display:flex;gap:14px;justify-content:center;margin:14px 0}
+.char{flex:1;max-width:160px;border:3px solid #fff;background:#22224a;color:#fff;padding:10px 4px 8px;box-shadow:3px 3px 0 #000;font:400 9px/1.4 var(--hand);border-radius:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.char img{width:100%;max-width:120px;height:auto;image-rendering:auto}
+.char.on{background:#ffe14d;color:#000;outline:3px solid #fff;outline-offset:2px}
+.swrow{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}.opt{min-height:44px;padding:0 12px;border:3px solid #fff;background:#22224a;color:#fff;font:400 9px var(--hand);border-radius:0;box-shadow:3px 3px 0 #000}
 .opt.on{background:#ffe14d;color:#000}
 </style>
 
@@ -396,11 +395,12 @@ L.control.zoom({position:"topright"}).addTo(map);
 const cluster=(L.markerClusterGroup?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:45,disableClusteringAtZoom:17,iconCreateFunction:c=>L.divIcon({className:"",html:`<div class="mc">${c.getChildCount()}</div>`,iconSize:[38,38]})}):L.layerGroup()).addTo(map);
 L.marker(CHALE,{icon:L.divIcon({className:"",html:'<div class="tag home">'+svg("casa")+'</div>',iconSize:[34,34],iconAnchor:[17,30]})}).addTo(map).on("click",()=>toast("Nosso chalé (posição aproximada)"));
 let AV=null;try{AV=JSON.parse(localStorage.getItem("stl-avatar")||"null")}catch(e){}
+if(!AV||!AV.who)AV=null;
+const avFile=(a,t)=>`avatars/${a.who}${a.glasses?"-oculos":""}-${t}.png`;
 function meIcon(){return AV
- ?L.divIcon({className:"",html:`<div class="me av"><i>você</i>${faceSVG(AV,34)}</div>`,iconSize:[40,40],iconAnchor:[20,20]})
+ ?L.divIcon({className:"",html:`<div class="me av"><i>você</i><img src="${avFile(AV,"rosto")}" alt="" draggable="false"></div>`,iconSize:[44,44],iconAnchor:[22,22]})
  :L.divIcon({className:"",html:'<div class="me"><i>você</i></div>',iconSize:[22,22],iconAnchor:[11,11]})}
 const meMarker=L.marker(CENTER,{icon:meIcon(),interactive:true,keyboard:false,zIndexOffset:1000}).on("click",()=>openAvatar());
-
 function km(a,b){const R=6371,t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]);
  const h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
 const dist=p=>p.ll?km(pos||CHALE,p.ll):null;
@@ -480,46 +480,23 @@ addEventListener("popstate",()=>{const was=guardOn;guardOn=false;
 function mark(id,v){const was=st(id)===v;if(was)delete status[id];else status[id]={s:v,d:new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};save();render();openSheet(id,true);
  toast(was?"Desmarcado":v==="fui"?tx().tDone:tx().tWant)}
 
-/* ===== Carinha em pixel (cada celular guarda a sua) ===== */
-const HAIRS=["#111111","#5a3a1a","#d2691e","#ffd34d","#ff4d8d","#25a0ff","#b06bff","#e8e8e8"];
-const SKINS=["#ffdcb8","#f1c27d","#d9a066","#a8724a","#6b4226"];
-const STYLES=[["curto","Curto"],["longo","Longo"],["coque","Coque"],["moicano","Moicano"]];
-function faceSVG(a,size){
- const R=(x,y,w,hh,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="${c}"/>`;const s=a.skin,hc=a.hair;let g="";
- if(a.style==="longo")g+=R(2,3,8,8,hc);
- if(a.style==="coque")g+=R(5,0,2,1,hc)+R(4,1,4,1,hc);
- if(a.style==="moicano")g+=R(5,0,2,3,hc)+R(4,2,4,1,hc);
- g+=R(3,3,6,6,s)+R(4,9,4,1,s);
- if(a.style==="curto"||a.style==="coque")g+=R(3,2,6,2,hc)+R(2,3,1,2,hc)+R(9,3,1,2,hc);
- if(a.style==="longo")g+=R(3,2,6,2,hc)+R(2,2,1,9,hc)+R(9,2,1,9,hc);
- if(a.style==="moicano")g+=R(3,3,6,1,hc);
- g+=R(4,5,1,1,"#111")+R(7,5,1,1,"#111");
- if(a.beard)g+=R(3,8,6,2,hc)+R(4,10,4,1,hc);
- g+=R(4,7,1,1,"#a33")+R(7,7,1,1,"#a33")+R(5,8,2,1,"#a33");
- if(a.glasses)g+=`<g fill="none" stroke="#111" stroke-width=".5"><rect x="3.75" y="4.75" width="2" height="1.5"/><rect x="6.75" y="4.75" width="2" height="1.5"/></g>`+R(5.75,5.4,1,.5,"#111");
- return `<svg viewBox="0 0 12 12" width="${size}" height="${size}" shape-rendering="crispEdges">${g}</svg>`}
+/* ===== Personagens (cada celular guarda o seu) ===== */
 function showSheet(html,c,keep){const sh=document.getElementById("sheet"),b=document.getElementById("sheetBody");
  sh.style.setProperty("--c",c);closePeek();b.innerHTML=html;b.onclick=null;if(!keep)sh.scrollTop=0;sh.classList.add("open");sheetOpen=true;
  if(!guardOn){guardOn=true;try{history.pushState({g:1},"")}catch(e){guardOn=false}}}
 let draft=null;
-function openAvatar(){draft=Object.assign({style:"curto",hair:"#5a3a1a",skin:"#f1c27d",glasses:false,beard:false},AV||{});drawAvatar(false)}
+function openAvatar(){draft=Object.assign({who:"p1",glasses:false},AV||{});drawAvatar(false)}
 function drawAvatar(keep){
- const sw=(arr,k)=>arr.map(c=>`<button class="sw ${draft[k]===c?"on":""}" style="background:${c}" data-k="${k}" data-v="${c}" aria-label="${k}"></button>`).join("");
- showSheet(`<h2>Sua carinha</h2>
-  <div class="meta">Cada celular mostra a própria carinha no mapa. Monte a sua!</div>
-  <div class="avprev">${faceSVG(draft,112)}</div>
-  <h3 class="how">Cabelo</h3>
-  <div class="swrow">${STYLES.map(([v,n])=>`<button class="opt ${draft.style===v?"on":""}" data-k="style" data-v="${v}">${n}</button>`).join("")}</div>
-  <div class="swrow">${sw(HAIRS,"hair")}</div>
-  <h3 class="ok">Pele</h3><div class="swrow">${sw(SKINS,"skin")}</div>
-  <h3 class="lore">Detalhes</h3>
-  <div class="swrow"><button class="opt ${draft.glasses?"on":""}" data-k="glasses" data-v="t">Óculos</button><button class="opt ${draft.beard?"on":""}" data-k="beard" data-v="t">Barba</button></div>
+ const card=(w,nome)=>`<button class="char ${draft.who===w?"on":""}" data-k="who" data-v="${w}" aria-label="${nome}"><img src="${avFile({who:w,glasses:draft.glasses},"corpo")}" alt=""><span>${nome}</span></button>`;
+ showSheet(`<h2>Quem é você?</h2>
+  <div class="meta">Cada celular mostra o personagem escolhido no mapa. Escolha o seu!</div>
+  <div class="charrow">${card("p1","Cabelo ruivo")}${card("p2","Barba")}</div>
+  <div class="swrow"><button class="opt ${draft.glasses?"on":""}" data-k="glasses" data-v="t">Óculos</button></div>
   <div class="btns"><button class="btn go" id="avsave">Salvar</button><button class="btn" id="avdel">Só o pontinho</button></div>`,"#ff4d8d",keep);
  document.getElementById("sheetBody").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;const k=b.dataset.k,v=b.dataset.v;draft[k]=v==="t"?!draft[k]:v;drawAvatar(true)};
- document.getElementById("avsave").onclick=()=>{AV=Object.assign({},draft);try{localStorage.setItem("stl-avatar",JSON.stringify(AV))}catch(e){}meMarker.setIcon(meIcon());closeSheet();toast("Carinha salva!")};
+ document.getElementById("avsave").onclick=()=>{AV=Object.assign({},draft);try{localStorage.setItem("stl-avatar",JSON.stringify(AV))}catch(e){}meMarker.setIcon(meIcon());closeSheet();toast("Personagem salvo!")};
  document.getElementById("avdel").onclick=()=>{AV=null;try{localStorage.removeItem("stl-avatar")}catch(e){}meMarker.setIcon(meIcon());closeSheet();toast("Voltou o pontinho")};
-}
-function hintAv(){try{if(!AV&&!localStorage.getItem("stl-avhint")){localStorage.setItem("stl-avhint","1");setTimeout(()=>toast("Toque no seu pontinho para criar a sua carinha"),2200)}}catch(e){}}
+}function hintAv(){try{if(!AV&&!localStorage.getItem("stl-avhint")){localStorage.setItem("stl-avhint","1");setTimeout(()=>toast("Toque no seu pontinho para escolher o seu personagem"),2200)}}catch(e){}}
 function openHelp(){const sh=document.getElementById("sheet");sh.style.setProperty("--c","#ff3d8b");closePeek();
  const ua=navigator.userAgent;
  const inapp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|Telegram|GSA\/|Messenger|MicroMessenger|; wv\)/i.test(ua);
@@ -527,7 +504,7 @@ function openHelp(){const sh=document.getElementById("sheet");sh.style.setProper
  document.getElementById("sheetBody").innerHTML=`<h2>Como instalar e ajuda</h2>
   ${inapp?'<div class="tempo"><span>Você parece estar dentro de outro app. Abra o link no Safari (iPhone) ou no Chrome (Android).</span></div>':""}
   ${standalone?'<div class="meta">Você já está usando o app instalado.</div>':""}
-  <div class="btns"><button class="btn go" onclick="openAvatar()">Criar minha carinha</button></div>
+  <div class="btns"><button class="btn go" onclick="openAvatar()">Escolher meu personagem</button></div>
   <h3 class="ok">iPhone (Safari)</h3>
   <ul><li>Toque em Compartilhar (quadrado com seta). Se não achar, toque nos três pontinhos da barra de baixo e depois em Compartilhar.</li><li>Role a lista e toque em Adicionar à Tela de Início.</li></ul>
   <h3 class="ok">Android (Chrome)</h3>
