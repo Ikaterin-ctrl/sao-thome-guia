@@ -71,6 +71,9 @@ textarea{width:100%;min-height:70px;background:transparent;border:1.5px dashed v
 .note{color:var(--mut);font-size:12px;margin-top:12px}
 .tips{transform:rotate(.4deg)}
 /* ---- v3: cor, fichas, mapa ---- */
+#me{position:absolute;right:10px;top:104px;z-index:500;width:44px;height:44px;padding:0;border:2px solid var(--ink);background:var(--neon);color:#fff;box-shadow:2px 2px 0 var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center}
+#me svg{width:26px;height:26px}
+#me.busy{opacity:.6}
 .hbtns{display:flex;gap:6px;align-items:center}
 #loc{white-space:nowrap;padding:9px 10px}
 header>div:first-child{min-width:0}
@@ -126,7 +129,7 @@ header h1{background:linear-gradient(transparent 62%,#ff3d8b44 62%);display:inli
   <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><div class="hbtns"><button id="help" aria-label="Como instalar e ajuda">?</button><button id="loc">Perto de mim</button></div></div></header>
   <div class="prog"><i id="progbar"></i></div>
   <div class="chips" id="chips"></div>
-  <div id="mapwrap"><div id="map"></div><div class="mapbtns"><button id="fit">Ver tudo</button><button id="ctr">Centro</button></div></div>
+  <div id="mapwrap"><div id="map"></div><div class="mapbtns"><button id="fit">Ver tudo</button><button id="ctr">Centro</button></div><button id="me" aria-label="Ir para a minha localização" title="Onde estou"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg></button></div>
   <div id="list"></div>
 </div>
 <div id="peek"></div>
@@ -411,6 +414,19 @@ function locate(auto){
 }
 document.getElementById("loc").onclick=()=>locate(false);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&pos&&!sheetOpen)locate(true)});
+/* Botão redondo no mapa: vai para onde você está agora, mesmo longe de São Thomé */
+document.getElementById("me").onclick=()=>{
+ const b=document.getElementById("me");
+ if(!navigator.geolocation){toast("Seu navegador não tem localização.");return}
+ if(pos){meMarker.setLatLng(pos).addTo(map);map.setView(pos,Math.max(map.getZoom(),16))}
+ b.classList.add("busy");
+ navigator.geolocation.getCurrentPosition(g=>{
+  b.classList.remove("busy");pos=[g.coords.latitude,g.coords.longitude];meMarker.setLatLng(pos).addTo(map);
+  map.setView(pos,Math.max(map.getZoom(),16));document.getElementById("loc").textContent="Atualizar local";render();
+  if(km(pos,CENTER)>30)toast("Você está a "+Math.round(km(pos,CENTER))+" km de São Thomé.")},
+ err=>{b.classList.remove("busy");toast(err&&err.code===1?"Localização bloqueada. Toque no ? para ver como liberar.":"Não consegui sua localização. Vá para céu aberto e tente de novo.")},
+ {enableHighAccuracy:true,timeout:15000,maximumAge:10000});
+};
 document.getElementById("fit").onclick=()=>map.fitBounds(L.latLngBounds(P.filter(p=>p.ll).map(p=>p.ll)).pad(.1));
 document.getElementById("ctr").onclick=()=>map.setView(CENTER,15);
 render();
