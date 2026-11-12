@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#efe6d3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="São Thomé">
+<title>Guia São Thomé</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="lib/leaflet.css">
+<style>
+@font-face{font-family:'Caveat';font-weight:600;font-display:swap;src:url(fonts/caveat.woff2) format('woff2')}
+@font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(fonts/specialelite.woff2) format('woff2')}
+:root{--paper:#efe6d3;--paper2:#f6efe0;--ink:#2a2420;--mut:#6b5f55;--stone:#c9a9a0;--ocre:#b8782f;--fog:#6f8a9a;--neon:#ff3d8b;--moss:#4f6b3a;--stamp:#b3261e;
+--type:'Special Elite','Courier New',monospace;--hand:'Caveat','Segoe Print','Bradley Hand',cursive}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font:15px/1.45 var(--type)}
+body{background-image:radial-gradient(#0000000a 1px,transparent 1px);background-size:5px 5px}
+#app{display:flex;flex-direction:column;height:100dvh;padding-top:env(safe-area-inset-top)}
+header{padding:10px 16px 4px;display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.kicker{font:600 20px/1 var(--hand);color:var(--neon);transform:rotate(-2deg);display:block}
+header h1{font:400 24px/1.1 var(--type);margin:2px 0 0;letter-spacing:-.5px}
+#count{font:600 17px var(--hand);color:var(--mut);white-space:nowrap}
+.top-r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+#loc{background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:9px 12px;font:13px var(--type);min-height:40px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:0 12px;min-height:40px;font:13px var(--type);border-radius:255px 12px 225px 12px/12px 225px 12px 255px}
+.chip svg{width:18px;height:18px}
+.chip.on{background:var(--ink);color:var(--paper)}
+#mapwrap{flex:0 0 42%;min-height:210px;margin:0 12px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);position:relative;transform:rotate(-.3deg)}
+#map{position:absolute;inset:0;background:#e0d6c0}
+.tiles{filter:sepia(.55) saturate(.75) contrast(.95) brightness(1.03)}
+.leaflet-container{font-family:var(--type)}
+#list{flex:1;overflow-y:auto;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+.page{position:relative;background:var(--paper2);border:1.5px solid var(--ink);padding:12px 14px;margin-bottom:14px;box-shadow:3px 3px 0 var(--ink);transform:rotate(var(--r,0deg));border-radius:2px 14px 3px 10px;min-height:56px}
+.page .t{display:flex;align-items:center;gap:10px;font-size:16px}
+.page .t svg{flex:none;width:26px;height:26px;color:var(--c)}
+.page .t b{font-weight:400;flex:1}
+.page .s{color:var(--mut);font-size:13px;margin:3px 0 0 36px}
+.dist{font:600 18px var(--hand);color:var(--ocre);white-space:nowrap}
+.road{display:inline-block;margin-left:6px;border:1.5px solid var(--stamp);color:var(--stamp);font-size:11px;padding:0 5px;transform:rotate(-3deg)}
+.mini{font:600 18px var(--hand);color:var(--stamp);border:2px solid var(--stamp);padding:0 7px;transform:rotate(-6deg)}
+.mini.q{color:var(--ocre);border-color:var(--ocre)}
+.tag{width:34px;height:34px;background:var(--paper2);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);color:var(--c);display:flex;align-items:center;justify-content:center;transform:rotate(-4deg);border-radius:2px 8px 2px 8px}
+.tag svg{width:22px;height:22px}
+.tag.done{background:#e8c8c4;color:var(--stamp)}
+.tag.want{outline:2px dashed var(--ocre);outline-offset:2px}
+.me{width:16px;height:16px;border-radius:50%;background:var(--neon);border:3px solid var(--paper);box-shadow:0 0 0 5px #ff3d8b44}
+#sheet{position:fixed;left:0;right:0;bottom:0;max-height:86dvh;overflow-y:auto;background:var(--paper2);border-top:2px solid var(--ink);box-shadow:0 -4px 0 var(--ink);padding:18px 18px calc(24px + env(safe-area-inset-bottom));transform:translateY(106%);transition:transform .25s;z-index:1000;background-image:repeating-linear-gradient(transparent 0 27px,#2a24201a 27px 28px)}
+#sheet.open{transform:none}
+#sheet h2{font:400 22px/1.15 var(--type);margin:0 44px 2px 0}
+#sheet .x{position:absolute;right:12px;top:12px;background:transparent;border:1.5px solid var(--ink);color:var(--ink);width:40px;height:40px;font-size:18px;border-radius:50%}
+.meta{color:var(--mut);font-size:13px;margin-bottom:10px}
+.stamp{position:absolute;right:62px;top:14px;font:600 24px/1 var(--hand);color:var(--stamp);border:3px solid var(--stamp);padding:4px 10px;transform:rotate(-9deg);opacity:.85;text-align:center}
+.stamp small{display:block;font:12px var(--type)}
+h3{font:600 20px var(--hand);margin:14px 0 2px}
+h3.ok{color:var(--moss)}h3.no{color:var(--stamp)}h3.how{color:var(--fog)}h3.lore{color:#8e6aa8}h3.nota{color:var(--neon)}
+ul{margin:0;padding-left:20px}li{margin:3px 0}
+.btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{flex:1;min-width:130px;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font:14px var(--type);text-decoration:none;border-radius:2px 12px 2px 12px;box-shadow:2px 2px 0 var(--ink)}
+.btn.go{background:var(--ink);color:var(--paper)}
+.btn.on{background:var(--ocre);color:var(--paper)}
+.btn.fui.on{background:var(--stamp)}
+textarea{width:100%;min-height:70px;background:transparent;border:1.5px dashed var(--ink);padding:8px;font:600 19px/1.2 var(--hand);color:var(--ink);resize:vertical}
+.note{color:var(--mut);font-size:12px;margin-top:12px}
+.tips{transform:rotate(.4deg)}
+/* ---- v3: cor, fichas, mapa ---- */
+.tag.home{--c:var(--neon);background:#ffd9e8}
+.tempo{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
+.tempo span{border:1.5px dashed var(--ink);padding:4px 8px;font-size:13px;background:var(--paper)}
+.chip{font-size:14px}
+.chip.on{background:var(--c);color:#fff}
+.chip.on svg{color:#fff}
+.prog{height:8px;margin:0 16px 2px;border:1.5px solid var(--ink);background:var(--paper2);border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:repeating-linear-gradient(135deg,var(--neon) 0 8px,var(--ocre) 8px 16px,var(--fog) 16px 24px);transition:width .4s}
+.page{background:color-mix(in srgb,var(--c) 14%,var(--paper2));padding-left:16px;margin-top:6px}
+.page::before{content:"";position:absolute;left:16px;top:-9px;width:56px;height:16px;background:var(--c);opacity:.6;transform:rotate(-4deg)}
+.page.tips{--c:var(--neon)}
+header h1{background:linear-gradient(transparent 62%,#ff3d8b44 62%);display:inline}
+#sheet{top:48px;max-height:none;border-top:8px solid var(--c,var(--ink));box-shadow:none}
+#sheet h2{background:linear-gradient(transparent 58%,color-mix(in srgb,var(--c) 45%,transparent) 58%);display:inline}
+#sheet .btn.go{background:var(--c,var(--ink));border-color:var(--ink);color:#fff}
+#peek{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--c,#888) 14%,var(--paper2));border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);padding:12px 14px;z-index:900;transform:translateY(160%);transition:transform .2s}
+#peek.open{transform:none}
+#peek .t{display:flex;align-items:center;gap:10px;font-size:17px;margin-right:40px}
+#peek .t svg{width:26px;height:26px;color:var(--c)}
+#peek .s{color:var(--mut);font-size:13px;margin:2px 0 0 36px}
+#peek .x{position:absolute;right:8px;top:8px;background:transparent;border:1.5px solid var(--ink);width:40px;height:40px;border-radius:50%;font-size:16px;color:var(--ink)}
+#toast{position:fixed;left:50%;top:70px;transform:translate(-50%,-30px);background:var(--ink);color:var(--paper);padding:10px 16px;font:600 20px var(--hand);z-index:2000;opacity:0;transition:.25s;pointer-events:none;border-radius:2px 12px 2px 12px;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.mapbtns{position:absolute;left:8px;top:8px;z-index:500;display:flex;gap:6px}
+.mapbtns button{min-height:40px;padding:0 12px;border:2px solid var(--ink);background:var(--paper2);color:var(--ink);font:13px var(--type);box-shadow:2px 2px 0 var(--ink);border-radius:2px 10px 2px 10px}
+.mc{width:38px;height:38px;border-radius:50%;background:var(--neon);color:#fff;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);display:flex;align-items:center;justify-content:center;font:700 15px var(--type)}
+.leaflet-bar{border:2px solid var(--ink)!important;box-shadow:2px 2px 0 var(--ink)!important}
+.leaflet-bar a{width:40px!important;height:40px!important;line-height:40px!important;font-size:22px!important;background:var(--paper2)!important;color:var(--ink)!important}
+.chips{-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}
+@media (max-height:700px) and (orientation:portrait){
+ header h1{font-size:20px}.kicker{font-size:17px}
+ .chips{padding-top:4px;padding-bottom:6px}.chip{min-height:38px}
+ #mapwrap{flex-basis:32%;min-height:170px}
+}
+@media (orientation:landscape) and (max-height:520px){
+ #app{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto minmax(0,1fr)}
+ header,.chips,.prog{grid-column:1/3}
+ #mapwrap{grid-column:1;grid-row:4;flex:none;min-height:0;margin-bottom:10px}
+ #list{grid-column:2;grid-row:4}
+ #sheet{top:0}
+}
+</style>
+
+
+</head>
+<body>
+<div id="app">
+  <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><button id="loc">Perto de mim</button></div></header>
+  <div class="prog"><i id="progbar"></i></div>
+  <div class="chips" id="chips"></div>
+  <div id="mapwrap"><div id="map"></div><div class="mapbtns"><button id="fit">Ver tudo</button><button id="ctr">Centro</button></div></div>
+  <div id="list"></div>
+</div>
+<div id="peek"></div>
+<div id="toast"></div>
+<div id="sheet"><button class="x" onclick="closeSheet()">✕</button><div id="sheetBody"></div></div>
+
+<script src="lib/leaflet.js"></script>
+<script src="lib/markercluster.js"></script>
+<script>
+const CENTER=[-21.7218,-44.9850];
+const CHALE=[-21.7605,-44.9865]; /* chalé do Airbnb: posição aproximada (perto da Cachoeira Paraíso). Só vale até o GPS responder */
+const CATS={all:["Tudo","✨","#bd93f9"],mistico:["Místico","🔮","#bd93f9"],mirante:["Mirantes","🌄","#ffb86c"],gruta:["Grutas","🦇","#6272a4"],agua:["Água","💦","#8be9fd"],comer:["Comer","🍽️","#50fa7b"],cafe:["Cafés","☕","#f1fa8c"],bar:["Bares","🍻","#ff79c6"]};
+
+/* ap:0 = posição conferida no OpenStreetMap. ap:1 = aproximada. ll:null = sem pino. */
+const P=[
+{id:"piramide",t:"1 a 2 h",n:"A Pirâmide",c:"mirante",ll:[-21.72573,-44.98353],ap:0,r:4.7,h:"Aberta até meia-noite",d:"Perto do centro",
+ s:"Ponto mais icônico da cidade, vista de 360° e o clássico pôr do sol com a galera aplaudindo.",
+ ok:["Chegar cedo para pegar lugar","Subir no telhado de pedra para ver os 360°","Música, vendedores e clima esotérico no fim da tarde"],
+ no:["Não é lugar de silêncio: costuma encher","Vento gelado forte quando o sol cai: leve corta-vento"],
+ lore:"Ponto de encontro de quem busca energia e avistamentos de luzes no céu desde os anos 70."},
+{id:"bruxa",t:"30 min",n:"Pedra da Bruxa",c:"mistico",ll:[-21.72392,-44.98154],ap:0,r:4.7,h:"Aberta até meia-noite",d:"Perto do centro",
+ s:"Formação que desenha o perfil e o chapéu de uma bruxa. Fica pertinho da Pirâmide e o acesso é tranquilo.",
+ ok:["Ótima para fotos e para ver as montanhas","Combina com a Pirâmide no mesmo passeio"],
+ no:["Quartzito fica liso com sereno/umidade: vá de tênis com aderência"],
+ lore:"Diz a lenda que a bruxa sopra rajadas de vento em quem sobe com arrogância ou desrespeito."},
+{id:"cruzeiro",t:"30 min a 1 h",n:"Mirante do Cruzeiro",c:"mirante",ll:[-21.72540,-44.98266],ap:0,r:null,h:"—",d:"Perto da Pirâmide",
+ s:"Mirante ao lado da Pirâmide, com vista igualmente boa e mais sossegado para o pôr do sol.",
+ ok:["Melhor opção se a Pirâmide estiver lotada"],no:[],lore:""},
+{id:"coelhos",t:"30 min",n:"Mirante Pedra dos Coelhos",c:"mirante",ll:[-21.72311,-44.98123],ap:1,r:4.7,h:"24 horas",d:"Centro (R. José Nogueira)",
+ s:"Alternativa tranquila para sentar na pedra e olhar o horizonte e o céu.",
+ ok:["Aberto 24h","Bom para fugir do tumulto"],no:[],lore:""},
+{id:"matriz",t:"20 min",n:"Igreja Matriz e Igreja do Rosário",c:"mistico",ll:[-21.72295,-44.98550],ap:1,r:null,h:"—",d:"Centro",
+ s:"Igrejas históricas erguidas com lajes de quartzito encaixadas, praticamente sem argamassa.",
+ ok:["Dá para ver tudo a pé no centro"],no:["Ladeiras de pedra escorregam com chuva ou sereno"],
+ lore:"Diz a tradição que a imagem do santo sumia do altar provisório e amanhecia onde hoje fica a gruta, como se escolhesse o lugar da igreja."},
+{id:"grutastome",t:"20 min",n:"Gruta de São Thomé",c:"gruta",ll:[-21.72302,-44.98562],ap:0,r:4.7,h:"Até 18h",d:"Centro, ao lado da Matriz",
+ s:"Origem do nome da cidade. Rápida de atravessar, dá para subir no topo e ver o casario de pedra.",
+ ok:["Entrada gratuita","Iluminação noturna nova"],no:["As inscrições rupestres da entrada estão bem apagadas"],
+ lore:"No século XVIII, João Antão, fugido de uma fazenda, achou na gruta uma estátua de São Tomé e uma carta em português impecável. Ele era analfabeto, o fazendeiro viu milagre, deu-lhe a alforria e ergueu uma capela. As letras vermelhas na rocha deram o nome à cidade."},
+{id:"amendoim",t:"30 min a 1 h",n:"Ladeira do Amendoim",c:"mistico",ll:[-21.70585,-44.98340],ap:0,r:4.4,h:"Até 18h",d:"~4 km de asfalto + 2 km de terra",
+ s:"Carro em ponto morto parece subir sozinho. É ilusão de ótica, mas a sensação é bizarra e divertida.",
+ ok:["Guias e lojinhas de artesanato","Pisca-alerta e teste só com a pista livre","Perto da Gruta do Carimbado (trilha ~15 min)"],
+ no:["Sem banheiro","Pouca sinalização (placa da \"Madson\")","Passam carros e quadriciclos na terra"],
+ how:"Do centro, asfalto sentido Três Corações por 4 km. Entre à direita no acesso de terra e pedra, 2 km, e siga à direita na bifurcação.",
+ lore:"Quem acredita vê um depósito magnético ou naves que pousavam na serra. Há também dois blocos de rocha: o de baixo daria carga negativa, o de cima (de braços abertos) positiva."},
+{id:"carimbado",t:"1 h",n:"Gruta do Carimbado",c:"gruta",ll:[-21.70783,-44.98182],ap:0,r:4.7,h:"Só por fora",d:"Perto da Ladeira do Amendoim",
+ s:"A mais misteriosa e lendária da região.",
+ ok:["Caminhada de ~15 min e dá para ver a entrada por fora"],
+ no:["Por dentro está FECHADA e lacrada por risco de desmoronamento e falta de ventilação"],
+ lore:"A lenda diz que é um túnel até Machu Picchu. Nos anos 70 e 80 equipes de TV e espeleólogos tentaram, mas pararam em trechos estreitos ou assoreados."},
+{id:"labirinto",t:"2 h (gruta ~40 min + poço)",n:"Gruta do Labirinto",c:"gruta",ll:[-21.6620,-44.9070],ap:1,r:4.7,h:"Até 17h",d:"Sobradinho (~18 km)",
+ s:"Galerias de quartzito com várias saídas, sem claustrofobia segundo quem foi. Cerca de 40 min de passeio.",
+ ok:["Guia, capacete, lanterna e botas inclusos","~R$ 50, reserva recomendada por WhatsApp/Instagram","Dá para esticar ao Poço Azul da propriedade"],
+ no:["Visita sempre guiada","O Poço Verde vizinho esteve interditado para melhorias"],lore:""},
+{id:"gsobradinho",t:"1 a 2 h",n:"Gruta do Sobradinho",c:"gruta",ll:[-21.6615,-44.9060],ap:1,r:4.7,h:"Até 17h",d:"Sobradinho",
+ s:"110 a 150 m por dentro da pedra, saindo numa queda d'água e poço de água gelada.",
+ ok:["Guia local, ~R$ 25","Leve roupa de banho"],no:[],lore:""},
+{id:"esmeraldas",t:"1 a 2 h",n:"Poço das Esmeraldas",c:"agua",ll:[-21.6610,-44.9065],ap:1,r:4.6,h:"Aberto",d:"Sobradinho (~15 km de chão, 35 min)",
+ s:"Água verde-esmeralda numa antiga pedreira. Isolado e geralmente vazio.",
+ ok:["Deixe o carro no Bar do Pedro e caminhe menos de 10 min","Leve seu lixo embora"],
+ no:["Muito fundo, sem parte rasa: precisa saber nadar","Pernilongo no fim da tarde","Remoto: evite ir sozinho(a) se o bar estiver fechado","Não confunda com o rio maior: o poço real fica mais abaixo"],lore:""},
+{id:"shangrila",t:"2 a 3 h",m:45,n:"Shangrilá",c:"agua",ll:null,ap:1,r:4.8,h:"Aberto",d:"~18 km do centro",
+ s:"Corredeira que forma poços de água dourada em degraus de pedra, com poço superior de borda infinita e pintura rupestre atrás de uma pedra.",
+ ok:["Entrada gratuita (até fev/2026)","Bem vazia e sem estrutura comercial"],
+ no:["Estrada de terra em péssimo estado, risco de atolar com carro comum","Descida da trilha pede cautela"],lore:""},
+{id:"antares",t:"2 a 3 h",m:40,n:"Cachoeira Antares",c:"agua",ll:null,ap:1,r:4.8,h:"Aberta",d:"Região rural",
+ s:"A maior queda da região, ~30 m. Poço raso e tranquilo, ponto de rapel. Piscina de Antares na parte de cima.",
+ ok:["Banho tranquilo no poço"],no:[],lore:""},
+{id:"garganta",t:"2 a 3 h",n:"Complexo da Garganta",c:"agua",ll:[-21.71899,-44.99174],ap:0,r:4.8,h:"Até 17h",d:"Perto do centro",
+ s:"Trilha estruturada com Garganta (dentro de um cânion), Gargantinha, Cachoeira da Escada e Poço dos Namorados.",
+ ok:["Corrimãos e passarelas","Hidrotrilha divertida entre as pedras"],no:["Pedra molhada escorrega"],lore:""},
+{id:"borboletas",t:"2 a 3 h",n:"Vale das Borboletas",c:"agua",ll:[-21.72556,-45.00689],ap:0,r:4.8,h:"Confira o dia",d:"Perto do centro",
+ s:"A mais acessível e estruturada. Trilhas de madeira, cachoeira e dois poços. O último é cheio de peixinhos.",
+ ok:["~R$ 20","Por volta das 12h o sol bate no último poço","Estacionamento, banheiro, restaurante e lojinhas","Barraca de artesanato indígena na entrada"],
+ no:["Lota em fim de semana: vá no meio da semana"],lore:""},
+{id:"gnomo",t:"1 h",n:"Poço do Gnomo",c:"agua",ll:[-21.72553,-45.00834],ap:0,r:4.8,h:"Aberto",d:"Dentro do Vale das Borboletas",
+ s:"Piscininha natural no alto da corredeira, bem mais vazia que a queda principal.",
+ ok:["Bom para estender a canga e fazer piquenique"],no:[],lore:"Na lenda, duendes escondem objetos de turista distraído e guiam quem pede licença à mata."},
+{id:"veu",t:"2 a 3 h",n:"Véu de Noiva e Paraíso",c:"agua",ll:[-21.76001,-44.98742],ap:0,r:null,h:"—",d:"Lado a lado",
+ s:"Véu de Noiva tem queda forte e poço fundo. A Paraíso tem uma \"prainha\" de areia.",
+ ok:["Duas cachoeiras no mesmo passeio"],no:["Mais cheia e mais cara que as alternativas afastadas"],lore:""},
+{id:"bromelias",t:"3 h com almoço",n:"Cachoeira das Bromélias e Poço dos Sonhos",c:"agua",ll:[-21.75664,-45.02555],ap:0,r:4.8,h:"Aberta",d:"~40 min de terra",
+ s:"Várias piscinas isoladas e restaurante a lenha no local. O Poço dos Sonhos fica mais à frente, atrás de uma cerca.",
+ ok:["~R$ 10 a 15","Antes do meio-dia está quase vazia","Comida caseira no forno a lenha"],
+ no:["Estrada de terra longa: saia cedo"],lore:""},
+{id:"sobradinho",t:"2 a 3 h",n:"Cachoeira Sobradinho",c:"agua",ll:[-21.6604,-44.9056],ap:1,r:4.7,h:"Aberta",d:"Sobradinho de Minas (~18 km)",
+ s:"Quedas suaves e muitos poços. Vilarejo onde o tempo parece parar.",
+ ok:["Combina com as grutas e o Poço das Esmeraldas"],no:[],lore:""},
+{id:"lua",t:"1 a 2 h",n:"Cachoeira da Lua",c:"agua",ll:[-21.70313,-44.94044],ap:0,r:5.0,h:"Aberta",d:"Perto da estrada",
+ s:"Trilha de uns 100 m, taxa simbólica de ~R$ 10.",
+ ok:["Beirada boa para famílias"],no:["Meio do poço tem 7 a 9 m de profundidade: cuidado se não nada bem"],lore:""},
+{id:"pedras",t:"1 h",m:15,n:"Cachoeira das Pedras",c:"agua",ll:null,ap:1,r:3.8,h:"Até 18h",d:"Fácil acesso",
+ s:"Opção pacata para caminhar sobre as lajes dentro d'água.",ok:["Pouco movimento"],no:[],lore:""},
+{id:"alquimista",t:"1h30",n:"O Alquimista",c:"comer",ll:[-21.72155,-44.98503],ap:0,r:4.6,p:"R$ 60-140",h:"Até 23h",d:"Centro",
+ s:"Casarão histórico, comida mineira na panela de pedra e pizza na pedra. Som ao vivo.",
+ ok:["Galinhada ao molho pardo, baião de dois, vaca atolada, tutu","Chegue antes das 19h30 para não pegar fila"],no:[],lore:""},
+{id:"panelinha",t:"1h30",n:"Restaurante Panelinha",c:"comer",ll:[-21.7222,-44.9855],ap:1,r:5.0,p:"",h:"—",d:"Centro",
+ s:"Familiar e intimista. Famosos o Tutu da Preta e a costelinha com farofa molhada.",
+ ok:["Doce de leite com queijo de sobremesa"],no:["Pode demorar em dia cheio (até ~40 min)"],lore:""},
+{id:"parrilla",t:"1h30",n:"Parrilla Del Brujo",c:"comer",ll:[-21.72185,-44.98549],ap:0,r:4.7,p:"R$ 60-160",h:"Abre às 17h",d:"Praça central, 2º andar",
+ s:"Carnes na brasa, com varanda para olhar a praça. Tem opção vegana e peixe.",ok:["Bom para drinks na varanda"],no:[],lore:""},
+{id:"quintal",t:"1h30",n:"Quintal das Lendas",c:"comer",ll:[-21.7213,-44.9848],ap:1,r:4.1,p:"R$ 40-140",h:"Até meia-noite",d:"Centro",
+ s:"Decoração em pedra e madeira, pizzas artesanais, caldos e chopp de vinho.",ok:["Espaço amplo, bom para ir sem pressa"],no:[],lore:""},
+{id:"borbazul",t:"1 h",n:"Borboleta Azul",c:"comer",ll:[-21.7258,-45.0070],ap:1,r:4.8,p:"R$ 40-60",h:"—",d:"Junto ao Vale das Borboletas",
+ s:"Comida caseira no fogão a lenha, ótima para o almoço depois da cachoeira.",ok:["Custo-benefício bom"],no:[],lore:""},
+{id:"quitanda",t:"2 h",n:"Casa da Quitanda",c:"comer",ll:[-21.6600,-44.9070],ap:1,r:5.0,p:"",h:"Só com reserva",d:"Sobradinho (~18 km)",
+ s:"Experiência gastronômica no alto da montanha. Comida da roça, caipirinha e ducha de água de cachoeira.",
+ ok:["Reserve antes: esgota nos fins de semana"],no:["Não aceita ir sem reserva"],lore:""},
+{id:"jardim",t:"2 h",n:"Jardim Secreto",c:"bar",ll:[-21.7217,-44.9852],ap:1,r:4.8,p:"R$ 60-160",h:"Abre às 18h",d:"Em frente à praça central",
+ s:"Restaurante e lounge com música ao vivo, drinks temáticos, pizzas e o show dos ETs interagindo com as mesas.",
+ ok:["Entrega nos chalés"],no:[],lore:""},
+{id:"zabele",t:"2 h",n:"Bar do Zabelê",c:"bar",ll:[-21.7220,-44.9846],ap:1,r:null,p:"",h:"Noite",d:"Centro",
+ s:"Clássico da cidade para cerveja gelada com som acústico ou reggae.",ok:[],no:[],lore:""},
+{id:"cogumelo",t:"2 a 3 h",n:"Rota Cogumelo Azul",c:"bar",ll:[-21.7222,-44.9841],ap:1,r:null,p:"",h:"Noite",d:"Centro e Alto do Cruzeiro",
+ s:"Circuito de bares temáticos (Toca Cogumelo Azul, Pub dos Elfos, Pub do ET, Casa do Mago) com passaporte de carimbos.",
+ ok:["Drinks diferentes e carimbos para colecionar"],no:[],lore:""},
+{id:"mineiroca",t:"45 min",n:"Mineiroca Café",c:"cafe",ll:[-21.7216,-44.9853],ap:1,r:4.9,p:"R$ 20-40",h:"Até 20h",d:"Centro",
+ s:"Café coado na mesa, pão de melado, pamonha Romeu e Julieta, torta de banana e opções veganas.",ok:[],no:[],lore:""},
+{id:"cafemagia",t:"45 min",n:"Café Magia",c:"cafe",ll:[-21.7219,-44.9857],ap:1,r:4.9,p:"R$ 20-40",h:"Até 19h",d:"Centro",
+ s:"Pão de queijo recheado de canastra ou doce de leite e bolo de fubá cremoso com goiabada.",ok:[],no:[],lore:""},
+{id:"caverna",t:"45 min",n:"Caverna Café no País das Maravilhas",c:"cafe",ll:[-21.7214,-44.9851],ap:1,r:4.4,p:"R$ 20-40",h:"Até 21h",d:"Centro",
+ s:"Decoração de Alice, pet friendly, tortas, bolos e cafés especiais.",ok:["Aceita pets"],no:[],lore:""},
+{id:"cafestome",t:"30 min",m:10,n:"Café São Thomé",c:"cafe",ll:null,ap:1,r:4.8,p:"R$ 20-40",h:"Até 19h",d:"Rodovia de chegada (LMG-862)",
+ s:"Empório e cafeteria, boa parada na ida ou na volta. Café coado, omelete e comida mineira.",ok:[],no:[],lore:""},
+{id:"flavio",t:"1 a 2 h",n:"Cachoeira do Flávio",c:"agua",ll:[-21.74402,-44.97777],ap:0,r:null,h:"Confira no local",d:"Perto do centro",
+ s:"Opção próxima ao centro para um mergulho rápido sem pegar estrada longa.",ok:["Boa para quem não quer dirigir muito"],no:["Horário e preço não confirmados: pergunte no local"],lore:""},
+{id:"eubiose",t:"1 a 2 h",n:"Cachoeira da Eubiose",c:"agua",ll:[-21.7261,-44.9599],ap:0,r:null,h:"Confira no local",d:"Perto do centro (trilha)",
+ s:"Queda d'água com trilha curta, pertinho da cidade. Boa para mergulho rápido.",ok:["Trilha própria até a queda"],no:["Horário e preço não confirmados: pergunte no local"],lore:""},
+{id:"feijao",t:"30 min",n:"Gruta do Feijão",c:"gruta",ll:[-21.7201,-44.97935],ap:0,r:null,h:"Confira no local",d:"Perto do centro",
+ s:"Gruta pequena perto da Pirâmide, aparece no mapa aberto da região.",ok:["Cabe no mesmo passeio da Pirâmide e da Pedra da Bruxa"],no:["Não achei horário nem regras de visita: confirme no local"],lore:""},
+{id:"cafemontanha",t:"45 min",n:"Café da Montanha",c:"cafe",ll:[-21.72544,-44.98266],ap:0,r:null,p:"",h:"Confira no local",d:"Perto do Cruzeiro e da Pirâmide",
+ s:"Café perto dos mirantes, bom para uma parada antes ou depois do pôr do sol.",ok:[],no:["Horário não confirmado"],lore:""},
+{id:"vegana",t:"1 h",n:"Vegana Bistrô",c:"comer",ll:[-21.71973,-44.98384],ap:0,r:null,p:"",h:"Confira no local",d:"Centro",
+ s:"Opção vegana no centro, para variar da comida mineira de panela.",ok:[],no:["Horário e cardápio não confirmados"],lore:""},
+{id:"chocolateria",t:"20 min",n:"A Chocolateria",c:"cafe",ll:[-21.72171,-44.98478],ap:0,r:null,p:"",h:"Confira no local",d:"Centro, perto da praça",
+ s:"Parada doce no centro, perto dos restaurantes da praça.",ok:[],no:["Horário não confirmado"],lore:""}
+];
+
+const TIPS=["💵 Leve dinheiro em espécie: o sinal oscila e muitas entradas e barracas só aceitam dinheiro.","👟 Calçado firme: as pedras do centro escorregam com chuva e sereno.","🌫️ Cerração aparece de repente. Leve casaco, principalmente para o pôr do sol.","🚗 Estradas de terra (Shangrilá, Bromélias, Sobradinho) pedem atenção em carro baixo.","📶 Abra o app com wifi antes de sair para o mapa ficar guardado no celular."];
+
+let cat="all",pos=null,markers={},status={},notes={};
+try{status=JSON.parse(localStorage.getItem("stl-status2")||"{}");notes=JSON.parse(localStorage.getItem("stl-notes")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("stl-status2",JSON.stringify(status));localStorage.setItem("stl-notes",JSON.stringify(notes))}catch(e){}};
+const BAD=["shangrila","bromelias","esmeraldas","amendoim","labirinto","gsobradinho","sobradinho","quitanda"];
+const COL={mistico:"#8e6aa8",mirante:"#c9822f",gruta:"#6f6a63",agua:"#4a7f94",comer:"#5f7a3c",cafe:"#a0522d",bar:"#d23a7a",all:"#2a2420"};
+const G={
+all:'<path d="M12 3l2.5 6 6.5.5-5 4.3 1.6 6.4L12 17l-5.6 3.2L8 13.8 3 9.5 9.5 9Z"/>',
+mistico:'<path d="M12 2l6 7-6 13-6-13Z M6 9h12 M12 2l-2 7 2 13 2-13"/>',
+mirante:'<path d="M2 20l7-12 4 6 3-4 6 10Z"/><circle cx="17" cy="5" r="2"/>',
+gruta:'<path d="M3 21V12a9 9 0 0 1 18 0v9 M8 21v-7a4 4 0 0 1 8 0v7"/>',
+agua:'<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11Z"/>',
+comer:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/>',
+cafe:'<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z M17 10h2a2 2 0 0 1 0 5h-2 M8 3v3 M12 3v3"/>',
+bar:'<path d="M5 4h14l-7 9Z M12 13v7 M8 20h8"/>',casa:'<path d="M3 11l9-8 9 8 M5 10v10h14V10 M10 20v-6h4v6"/>'};
+const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${G[k]}</svg>`;
+
+const map=L.map("map",{zoomControl:false}).setView(CENTER,15);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,className:"tiles",attribution:"© OpenStreetMap"}).addTo(map);
+L.control.zoom({position:"topright"}).addTo(map);
+const cluster=(L.markerClusterGroup?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:45,disableClusteringAtZoom:17,iconCreateFunction:c=>L.divIcon({className:"",html:`<div class="mc">${c.getChildCount()}</div>`,iconSize:[38,38]})}):L.layerGroup()).addTo(map);
+L.marker(CHALE,{icon:L.divIcon({className:"",html:'<div class="tag home">'+svg("casa")+'</div>',iconSize:[34,34],iconAnchor:[17,30]})}).addTo(map).on("click",()=>toast("Nosso chalé (posição aproximada)"));
+const meMarker=L.marker(CENTER,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[16,16]}),interactive:false});
+
+function km(a,b){const R=6371,t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]);
+ const h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const dist=p=>p.ll?km(pos||CHALE,p.ll):null;
+const from=()=>pos?"de você":"do chalé";
+function eta(p){if(!p.ll)return p.m?{m:p.m,mode:"de carro",ref:"do centro"}:null;const d=dist(p);
+ if(d<1.2)return{m:Math.max(2,Math.round(d*13)),mode:"a pé",ref:from()};
+ const v=BAD.includes(p.id)?20:35;return{m:Math.max(5,Math.round(d*1.5/v*12)*5),mode:"de carro",ref:from()}}
+function tempoShort(p){const e=eta(p);return (e?" · ~"+e.m+" min "+e.mode:"")+(p.t?" · visita ~"+p.t:"")}
+function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>Até lá: ~${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>Passeio: ~${esc(p.t)}</span>`:""}</div>`}
+const fmt=k=>k<1?Math.round(k*1000)+" m":k.toFixed(1).replace(".",",")+" km";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const st=id=>status[id]&&status[id].s;
+
+function icon(p){const s=st(p.id);
+ return L.divIcon({className:"",html:`<div class="tag ${s==="fui"?"done":s==="quero"?"want":""}" style="--c:${COL[p.c]}">${svg(p.c)}</div>`,iconSize:[34,34],iconAnchor:[17,30]})}
+
+function count(){const n=Object.values(status).filter(v=>v.s==="fui").length;document.getElementById("count").textContent=`${n} de ${P.length} descobertos`;document.getElementById("progbar").style.width=(100*n/P.length)+"%"}
+let tt;function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),1800)}
+const gmaps=p=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(p.n+" São Thomé das Letras MG");
+function closePeek(){document.getElementById("peek").classList.remove("open")}
+function peek(id){const p=P.find(x=>x.id===id),el=document.getElementById("peek");
+ el.style.setProperty("--c",COL[p.c]);
+ el.innerHTML=`<button class="x" onclick="closePeek()" aria-label="Fechar">✕</button><div class="t">${svg(p.c)}<b>${esc(p.n)}</b></div><div class="s">${esc(p.d)}${tempoShort(p)}</div><div class="btns"><button class="btn go" style="background:var(--c);color:#fff" onclick="openSheet('${id}')">Detalhes</button><a class="btn" target="_blank" rel="noopener" href="${gmaps(p)}">Como chegar</a></div>`;
+ el.classList.add("open");map.setView(p.ll,Math.max(map.getZoom(),15))}
+map.on("click",closePeek);
+
+function render(){
+ const items=P.filter(p=>cat==="all"||p.c===cat).sort((a,b)=>pos?(dist(a)??1e9)-(dist(b)??1e9):0);
+ cluster.clearLayers();
+ items.filter(p=>p.ll).forEach(p=>cluster.addLayer(L.marker(p.ll,{icon:icon(p)}).on("click",()=>peek(p.id))));
+ document.getElementById("list").innerHTML=items.map((p,i)=>{const s=st(p.id);
+  const right=s==="fui"?`<span class="mini">fui</span>`:s==="quero"?`<span class="mini q">quero</span>`:p.ll?`<span class="dist">${fmt(dist(p))}</span>`:"";
+  return `<div class="page" style="--r:${i%2?.5:-.5}deg;--c:${COL[p.c]}" onclick="openSheet('${p.id}')"><div class="t">${svg(p.c)}<b>${esc(p.n)}</b>${right}</div>
+  <div class="s">${esc(p.d)}${tempoShort(p)}${p.r?" · ★ "+p.r:""}${p.p?" · "+p.p:""}${BAD.includes(p.id)?'<span class="road">estrada de terra</span>':""}</div></div>`}).join("")
+  +`<div class="page tips"><div class="t"><b>Dicas de quem já foi</b></div><ul style="margin-top:6px">${TIPS.map(t=>`<li>${t.replace(/^\S+\s/,"")}</li>`).join("")}</ul></div>`;
+ count();
+}
+const list=(t,a,k)=>a&&a.length?`<h3 class="${k}">${t}</h3><ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:"";
+
+let sheetOpen=false;
+function openSheet(id,keep){
+ const p=P.find(x=>x.id===id),s=st(id);closePeek();
+ const sh=document.getElementById("sheet");sh.style.setProperty("--c",COL[p.c]);
+ const q=encodeURIComponent(p.n+" São Thomé das Letras MG");
+ document.getElementById("sheetBody").innerHTML=`
+  ${s==="fui"?`<div class="stamp">JÁ FUI<small>${esc(status[id].d||"")}</small></div>`:""}
+  <h2>${esc(p.n)}</h2>
+  <div class="meta">${esc(p.d)}${p.ll?" · "+fmt(dist(p))+" "+from():""}${p.r?" · ★ "+p.r:""}${p.p?" · "+p.p:""}<br>Horário: ${esc(p.h)}</div>${tempoBlock(p)}
+  <div>${esc(p.s)}</div>
+  ${p.how?`<h3 class="how">Como chegar</h3><div>${esc(p.how)}</div>`:""}
+  ${list("Comum / vale a pena",p.ok,"ok")}
+  ${list("Atenção / não rola",p.no,"no")}
+  ${p.lore?`<h3 class="lore">Lenda</h3><div>${esc(p.lore)}</div>`:""}
+  <h3 class="nota">Nota de nós dois</h3>
+  <textarea id="nota" placeholder="escreva uma lembrança depois de ir...">${esc(notes[id]||"")}</textarea>
+  <div class="btns">
+   <a class="btn go" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${q}">Como chegar</a>
+   <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Ver no Google Maps</a>
+  </div>
+  <div class="btns">
+   <button class="btn ${s==="quero"?"on":""}" onclick="mark('${id}','quero')">Quero ir</button>
+   <button class="btn fui ${s==="fui"?"on":""}" onclick="mark('${id}','fui')">Já fui</button>
+  </div>
+  <div class="note">${!p.ll?"Este lugar ainda não tem pino no mapa: use o botão Como chegar.":p.ap?"Pino aproximado: use Como chegar para a rota certa.":"Pino conferido no OpenStreetMap."} Preços e horários mudam: confirme no local.</div>`;
+ document.getElementById("nota").oninput=e=>{notes[id]=e.target.value;save()};
+ if(!keep)sh.scrollTop=0;
+ sh.classList.add("open");
+ if(!sheetOpen){sheetOpen=true;try{history.pushState({s:1},"")}catch(e){}}
+}
+function closeSheet(fromPop){document.getElementById("sheet").classList.remove("open");
+ if(sheetOpen){sheetOpen=false;if(fromPop!==true){try{history.back()}catch(e){}}}}
+addEventListener("popstate",()=>{if(sheetOpen)closeSheet(true)});
+function mark(id,v){const was=st(id)===v;if(was)delete status[id];else status[id]={s:v,d:new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};save();render();openSheet(id,true);
+ toast(was?"Desmarcado":v==="fui"?"Carimbado! Já fui":"Na lista de quero ir")}
+
+const chips=document.getElementById("chips");
+chips.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip ${k===cat?"on":""}" data-k="${k}" style="--c:${COL[k]}">${svg(k)}${v[0]}</button>`).join("");
+chips.onclick=e=>{const k=e.target.closest(".chip")?.dataset.k;if(!k)return;cat=k;
+ chips.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.k===k));closeSheet();render()};
+
+let watching=false,lt;
+addEventListener("offline",()=>toast("Sem internet: o mapa pode ficar incompleto, mas a lista e as fichas funcionam."));
+addEventListener("online",()=>toast("Internet de volta"));
+function locate(auto){
+ const b=document.getElementById("loc");
+ if(!navigator.geolocation){if(!auto)toast("Seu navegador não tem localização.");return}
+ b.textContent="Buscando...";
+ clearTimeout(lt);lt=setTimeout(()=>{if(b.textContent==="Buscando...")b.textContent=pos?"Atualizar local":"Perto de mim"},12000);
+ navigator.geolocation.getCurrentPosition(g=>{
+  pos=[g.coords.latitude,g.coords.longitude];meMarker.setLatLng(pos).addTo(map);
+  if(km(pos,CENTER)>30){toast("Você está a "+Math.round(km(pos,CENTER))+" km de São Thomé. Mostrando a cidade.");map.setView(CENTER,15)}
+  else map.setView(pos,16);
+  b.textContent="Atualizar local";render();
+  if(!watching){watching=true;navigator.geolocation.watchPosition(w=>{const n=[w.coords.latitude,w.coords.longitude];
+   if(pos&&km(n,pos)>.08){pos=n;meMarker.setLatLng(pos);render()}},()=>{},{enableHighAccuracy:true,maximumAge:15000})}},
+ ()=>{b.textContent="Perto de mim";toast(auto?"Sem localização: mostrando o centro. Toque em Perto de mim para tentar de novo.":"Não consegui sua localização. Permita o acesso no navegador.")},
+ {enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+}
+document.getElementById("loc").onclick=()=>locate(false);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&pos&&!sheetOpen)locate(true)});
+document.getElementById("fit").onclick=()=>map.fitBounds(L.latLngBounds(P.filter(p=>p.ll).map(p=>p.ll)).pad(.1));
+document.getElementById("ctr").onclick=()=>map.setView(CENTER,15);
+render();
+locate(true);
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
