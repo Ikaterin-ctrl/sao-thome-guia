@@ -33,7 +33,7 @@ header h1{font:400 24px/1.1 var(--type);margin:2px 0 0;letter-spacing:-.5px}
 .chip{flex:none;display:flex;align-items:center;gap:6px;background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:0 12px;min-height:40px;font:13px var(--type);border-radius:255px 12px 225px 12px/12px 225px 12px 255px}
 .chip svg{width:18px;height:18px}
 .chip.on{background:var(--ink);color:var(--paper)}
-#mapwrap{flex:0 0 42%;min-height:210px;margin:0 12px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);position:relative;transform:rotate(-.3deg)}
+#mapwrap{flex:0 0 42%;min-height:210px;margin:0 12px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);position:relative}
 #map{position:absolute;inset:0;background:#e0d6c0}
 .tiles{filter:sepia(.55) saturate(.75) contrast(.95) brightness(1.03)}
 .leaflet-container{font-family:var(--type)}
@@ -71,6 +71,11 @@ textarea{width:100%;min-height:70px;background:transparent;border:1.5px dashed v
 .note{color:var(--mut);font-size:12px;margin-top:12px}
 .tips{transform:rotate(.4deg)}
 /* ---- v3: cor, fichas, mapa ---- */
+.hbtns{display:flex;gap:6px;align-items:center}
+#loc{white-space:nowrap;padding:9px 10px}
+header>div:first-child{min-width:0}
+#toast{top:140px!important}
+#help{min-width:40px;min-height:40px;border:2px solid var(--ink);background:var(--paper2);color:var(--ink);font:700 18px var(--type);border-radius:50%;padding:0}
 .tag.home{--c:var(--neon);background:#ffd9e8}
 .tempo{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
 .tempo span{border:1.5px dashed var(--ink);padding:4px 8px;font-size:13px;background:var(--paper)}
@@ -118,7 +123,7 @@ header h1{background:linear-gradient(transparent 62%,#ff3d8b44 62%);display:inli
 </head>
 <body>
 <div id="app">
-  <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><button id="loc">Perto de mim</button></div></header>
+  <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><div class="hbtns"><button id="help" aria-label="Como instalar e ajuda">?</button><button id="loc">Perto de mim</button></div></div></header>
   <div class="prog"><i id="progbar"></i></div>
   <div class="chips" id="chips"></div>
   <div id="mapwrap"><div id="map"></div><div class="mapbtns"><button id="fit">Ver tudo</button><button id="ctr">Centro</button></div></div>
@@ -363,6 +368,24 @@ addEventListener("popstate",()=>{const was=guardOn;guardOn=false;
 function mark(id,v){const was=st(id)===v;if(was)delete status[id];else status[id]={s:v,d:new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};save();render();openSheet(id,true);
  toast(was?"Desmarcado":v==="fui"?"Carimbado! Já fui":"Na lista de quero ir")}
 
+function openHelp(){const sh=document.getElementById("sheet");sh.style.setProperty("--c","#ff3d8b");closePeek();
+ const ua=navigator.userAgent;
+ const inapp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|Telegram|GSA\/|Messenger|MicroMessenger|; wv\)/i.test(ua);
+ const standalone=navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+ document.getElementById("sheetBody").innerHTML=`<h2>Como instalar e ajuda</h2>
+  ${inapp?'<div class="tempo"><span>Você parece estar dentro de outro app. Abra o link no Safari (iPhone) ou no Chrome (Android).</span></div>':""}
+  ${standalone?'<div class="meta">Você já está usando o app instalado.</div>':""}
+  <h3 class="ok">iPhone (Safari)</h3>
+  <ul><li>Toque em Compartilhar (quadrado com seta). Se não achar, toque nos três pontinhos da barra de baixo e depois em Compartilhar.</li><li>Role a lista e toque em Adicionar à Tela de Início.</li></ul>
+  <h3 class="ok">Android (Chrome)</h3>
+  <ul><li>Menu de três pontinhos, depois Instalar app ou Adicionar à tela inicial.</li></ul>
+  <h3 class="how">Localização</h3>
+  <ul><li>iPhone: Ajustes, Privacidade e Segurança, Serviços de Localização ligado, Safari Sites, Ao usar o app. No Safari, toque em aA, depois Ajustes do Site, Localização, Permitir.</li><li>Android: Chrome, cadeado ao lado do endereço, Permissões, Localização, Permitir.</li><li>Depois toque em Perto de mim.</li></ul>
+  <h3 class="no">Sem sinal</h3>
+  <ul><li>Abra o app 2 vezes com wifi e passeie pelo mapa nas áreas que vai visitar.</li><li>Baixe também a região no Google Maps, em Mapas off-line.</li></ul>`;
+ sh.scrollTop=0;sh.classList.add("open");sheetOpen=true;
+ if(!guardOn){guardOn=true;try{history.pushState({g:1},"")}catch(e){guardOn=false}}}
+document.getElementById("help").onclick=openHelp;
 const chips=document.getElementById("chips");
 chips.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip ${k===cat?"on":""}" data-k="${k}" style="--c:${COL[k]}">${svg(k)}${v[0]}</button>`).join("");
 chips.onclick=e=>{const k=e.target.closest(".chip")?.dataset.k;if(!k)return;cat=k;
@@ -383,7 +406,7 @@ function locate(auto){
   b.textContent="Atualizar local";render();
   if(!watching){watching=true;navigator.geolocation.watchPosition(w=>{const n=[w.coords.latitude,w.coords.longitude];
    if(pos&&km(n,pos)>.08){pos=n;meMarker.setLatLng(pos);render()}},()=>{},{enableHighAccuracy:true,maximumAge:15000})}},
- ()=>{b.textContent="Perto de mim";toast(auto?"Sem localização: mostrando o centro. Toque em Perto de mim para tentar de novo.":"Não consegui sua localização. Permita o acesso no navegador.")},
+ err=>{b.textContent="Perto de mim";toast(err&&err.code===1?"Localização bloqueada. Toque no ? para ver como liberar.":"Não consegui sua localização. Vá para céu aberto e toque em Perto de mim.")},
  {enableHighAccuracy:true,timeout:15000,maximumAge:30000});
 }
 document.getElementById("loc").onclick=()=>locate(false);
@@ -392,6 +415,7 @@ document.getElementById("fit").onclick=()=>map.fitBounds(L.latLngBounds(P.filter
 document.getElementById("ctr").onclick=()=>map.setView(CENTER,15);
 render();
 locate(true);
+const fixMap=()=>map.invalidateSize();addEventListener("resize",fixMap);addEventListener("orientationchange",()=>setTimeout(fixMap,300));addEventListener("pageshow",fixMap);[200,800,2000].forEach(t=>setTimeout(fixMap,t));
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
