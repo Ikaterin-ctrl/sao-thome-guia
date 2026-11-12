@@ -189,6 +189,21 @@ html[data-theme=gibi] .leaflet-bar a{border-radius:0!important;background:#fff!i
  html[data-theme=gibi] header h1{font-size:26px;margin-top:6px}
  html[data-theme=gibi] #loc{font-size:15px;padding:9px 8px}
 }
+/* ---- v4: mapa maior e filtros mais espaçados (todos os visuais) ---- */
+.chips{gap:14px;padding:10px 18px 16px}
+.chip{min-height:44px;padding:0 14px}
+#mapwrap{flex-basis:52%;min-height:270px;margin-bottom:6px}
+@media (max-height:700px) and (orientation:portrait){
+ #mapwrap{flex-basis:44%;min-height:220px}
+ .chips{gap:12px;padding:6px 18px 12px}
+}
+@media (max-height:640px) and (orientation:portrait){
+ #mapwrap{flex-basis:38%;min-height:190px}
+}
+@media (orientation:landscape) and (max-height:520px){
+ #mapwrap{min-height:0;flex-basis:auto;margin-bottom:10px}
+ .chips{gap:10px;padding:6px 18px 8px}.chip{min-height:38px}
+}
 /* ====== TEMA ARCADE (alternativo): videogame pixel, HUD, fases e pontuação ====== */
 html[data-theme=arcade]{--paper:#12122a;--paper2:#22224a;--ink:#ffffff;--mut:#b9b9e8;--ocre:#ffe14d;--fog:#25e0ff;--neon:#ff4d8d;--moss:#6bff6b;--stamp:#ff4d8d;--hand:'Press Start 2P','Courier New',monospace;--type:'VT323','Courier New',monospace}
 html[data-theme=arcade] body{background-color:#12122a;background-image:linear-gradient(#ffffff0a 1px,transparent 1px),linear-gradient(90deg,#ffffff0a 1px,transparent 1px);background-size:16px 16px;font-size:20px;line-height:1.15;color:#fff}
