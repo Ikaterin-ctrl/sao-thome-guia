@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#efe6d3">
 <meta name="color-scheme" content="light">
+<script>try{var _t=localStorage.getItem('stl-theme');if(_t)document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="São Thomé">
@@ -15,6 +16,8 @@
 <link rel="stylesheet" href="lib/leaflet.css">
 <style>
 @font-face{font-family:'Caveat';font-weight:600;font-display:swap;src:url(fonts/caveat.woff2) format('woff2')}
+@font-face{font-family:'Bangers';font-weight:400;font-display:swap;src:url(fonts/bangers.woff2) format('woff2')}
+@font-face{font-family:'Comic Neue';font-weight:400 700;font-display:swap;src:url(fonts/comicneue.woff2) format('woff2')}
 @font-face{font-family:'Special Elite';font-weight:400;font-display:swap;src:url(fonts/specialelite.woff2) format('woff2')}
 :root{color-scheme:light;--paper:#efe6d3;--paper2:#f6efe0;--ink:#2a2420;--mut:#6b5f55;--stone:#c9a9a0;--ocre:#b8782f;--fog:#6f8a9a;--neon:#ff3d8b;--moss:#4f6b3a;--stamp:#b3261e;
 --type:'Special Elite','Courier New',monospace;--hand:'Caveat','Segoe Print','Bradley Hand',cursive}
@@ -51,7 +54,11 @@ header h1{font:400 24px/1.1 var(--type);margin:2px 0 0;letter-spacing:-.5px}
 .tag svg{width:22px;height:22px}
 .tag.done{background:#e8c8c4;color:var(--stamp)}
 .tag.want{outline:2px dashed var(--ocre);outline-offset:2px}
-.me{width:16px;height:16px;border-radius:50%;background:var(--neon);border:3px solid var(--paper);box-shadow:0 0 0 5px #ff3d8b44}
+.me{position:relative;width:22px;height:22px;border-radius:50%;background:var(--neon);border:4px solid #fff;box-shadow:0 0 0 2px #111,0 2px 6px #0007}
+.me::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:3px solid var(--neon);opacity:0;animation:pulso 1.8s ease-out infinite}
+.me i{position:absolute;left:28px;top:-3px;background:#111;color:#fff;font:700 12px var(--type);font-style:normal;padding:2px 6px;border-radius:8px;white-space:nowrap}
+@keyframes pulso{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.me::after{animation:none;opacity:.5;inset:-8px}}
 #sheet{position:fixed;left:0;right:0;bottom:0;max-height:86dvh;overflow-y:auto;background:var(--paper2);border-top:2px solid var(--ink);box-shadow:0 -4px 0 var(--ink);padding:18px 18px calc(24px + env(safe-area-inset-bottom));transform:translateY(106%);transition:transform .25s;z-index:1000;background-image:repeating-linear-gradient(transparent 0 27px,#2a24201a 27px 28px)}
 #sheet.open{transform:none}
 #sheet h2{font:400 22px/1.15 var(--type);margin:0 44px 2px 0}
@@ -78,6 +85,7 @@ textarea{width:100%;min-height:70px;background:transparent;border:1.5px dashed v
 #loc{white-space:nowrap;padding:9px 10px}
 header>div:first-child{min-width:0}
 #toast{top:140px!important}
+#theme{min-width:40px;min-height:40px;border:2px solid var(--ink);background:var(--paper2);color:var(--ink);border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center}
 #help{min-width:40px;min-height:40px;border:2px solid var(--ink);background:var(--paper2);color:var(--ink);font:700 18px var(--type);border-radius:50%;padding:0}
 .tag.home{--c:var(--neon);background:#ffd9e8}
 .tempo{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
@@ -120,13 +128,72 @@ header h1{background:linear-gradient(transparent 62%,#ff3d8b44 62%);display:inli
  #list{grid-column:2;grid-row:4}
  #sheet{top:0}
 }
+/* ====== TEMA GIBI (alternativo): traço grosso, pontinhos de impressão, cores fortes, balões ====== */
+html[data-theme=gibi]{--paper:#fff3c4;--paper2:#ffffff;--ink:#111;--mut:#3b3b3b;--ocre:#0b5cd5;--fog:#0b5cd5;--neon:#e62429;--moss:#12873a;--stamp:#e62429;--hand:'Bangers','Impact',cursive;--type:'Comic Neue','Comic Sans MS',sans-serif}
+html[data-theme=gibi] body{background-color:#fff3c4;background-image:radial-gradient(#e6242933 1.4px,transparent 1.7px);background-size:9px 9px}
+html[data-theme=gibi] .kicker{background:#ffd400;color:#111;border:2px solid #111;padding:2px 8px;font-size:15px;letter-spacing:.5px;display:inline-block;box-shadow:2px 2px 0 #111;transform:rotate(-2deg)}
+html[data-theme=gibi] header h1{font:400 30px/1.2 var(--hand);color:#ffd400;-webkit-text-stroke:1.5px #111;paint-order:stroke fill;text-shadow:3px 3px 0 #111;letter-spacing:1px;background:none;margin-top:8px}
+html[data-theme=gibi] #count{color:#111;font-size:19px;letter-spacing:.5px}
+html[data-theme=gibi] .prog{border-width:3px;height:12px;border-radius:0}
+html[data-theme=gibi] .prog i{background:repeating-linear-gradient(135deg,#e62429 0 8px,#ffd400 8px 16px,#0b5cd5 16px 24px)}
+html[data-theme=gibi] #loc{background:#e62429;color:#fff;border:3px solid #111;border-radius:0;font:400 17px var(--hand);letter-spacing:.5px;box-shadow:3px 3px 0 #111;transform:skew(-6deg)}
+html[data-theme=gibi] #help,html[data-theme=gibi] #theme{border:3px solid #111;background:#ffd400;color:#111;box-shadow:2px 2px 0 #111;font-family:var(--hand)}
+html[data-theme=gibi] .chip{border:3px solid #111;border-radius:0;transform:skew(-6deg);font:400 16px var(--hand);letter-spacing:.5px;background:#fff;box-shadow:2px 2px 0 #111}
+html[data-theme=gibi] .chip.on{background:var(--c);color:#fff}
+html[data-theme=gibi] #mapwrap{border:4px solid #111;box-shadow:5px 5px 0 #111;border-radius:0}
+html[data-theme=gibi] .tiles{filter:saturate(1.5) contrast(1.1) brightness(1.02)}
+html[data-theme=gibi] #mapwrap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:450;background-image:radial-gradient(#00000022 1.1px,transparent 1.3px);background-size:6px 6px}
+html[data-theme=gibi] .page{background-color:#fff;background-image:radial-gradient(color-mix(in srgb,var(--c) 45%,transparent) 1.3px,transparent 1.6px);background-size:7px 7px;border:3px solid #111;border-radius:0;box-shadow:5px 5px 0 #111;padding-left:24px;transform:rotate(var(--r,0deg)) skew(-1deg)}
+html[data-theme=gibi] .page::before{left:0;top:0;bottom:0;width:12px;height:auto;transform:none;opacity:1;background:var(--c);border-right:3px solid #111}
+html[data-theme=gibi] .page .t{font-size:17px;font-weight:700}
+html[data-theme=gibi] .page .t b{font-family:var(--hand);font-weight:400;font-size:22px;letter-spacing:.5px}
+html[data-theme=gibi] .page .s{font-weight:700}
+html[data-theme=gibi] .page.tips{--c:#ffd400}
+html[data-theme=gibi] .dist{color:#0b5cd5;font-size:22px}
+html[data-theme=gibi] .mini{background:#ffd400;color:#e62429;border:3px solid #111;font-size:18px}
+html[data-theme=gibi] .mini.q{background:#0b5cd5;color:#fff}
+html[data-theme=gibi] .road{background:#e62429;color:#fff;border-color:#111}
+html[data-theme=gibi] .tag{background:var(--c);color:#fff;border:3px solid #111;box-shadow:3px 3px 0 #111;border-radius:0;transform:skew(-6deg)}
+html[data-theme=gibi] .tag.done{background:#ffd400;color:#e62429}
+html[data-theme=gibi] .tag.want{outline:3px dashed #0b5cd5}
+html[data-theme=gibi] .tag.home{background:#e62429;color:#fff}
+html[data-theme=gibi] .mc{background:#ffd400;color:#111;border:3px solid #111;font-family:var(--hand);font-size:19px;box-shadow:3px 3px 0 #111}
+html[data-theme=gibi] #sheet{background-color:#fffbea;background-image:radial-gradient(#0b5cd522 1.3px,transparent 1.6px);background-size:8px 8px;border-top:8px solid var(--c,#111);box-shadow:0 -4px 0 #111}
+html[data-theme=gibi] #sheet h2{font:400 30px/1.05 var(--hand);letter-spacing:1px;background:linear-gradient(transparent 62%,color-mix(in srgb,var(--c) 55%,transparent) 62%)}
+html[data-theme=gibi] #sheet .x{border:3px solid #111;background:#ffd400}
+html[data-theme=gibi] h3{font-size:22px;letter-spacing:.5px}
+html[data-theme=gibi] .meta,html[data-theme=gibi] .note{font-weight:700}
+html[data-theme=gibi] .stamp{font:400 26px/1 var(--hand);background:#ffd400;color:#e62429;border:4px solid #111;box-shadow:4px 4px 0 #111;transform:rotate(-7deg);opacity:1;padding:6px 10px}
+html[data-theme=gibi] .btn{border:3px solid #111;border-radius:0;font:400 19px var(--hand);letter-spacing:.5px;box-shadow:3px 3px 0 #111;background:#fff;transform:skew(-4deg)}
+html[data-theme=gibi] #sheet .btn.go,html[data-theme=gibi] #peek .btn.go{background:var(--c);color:#fff}
+html[data-theme=gibi] .btn.on{background:#0b5cd5;color:#fff}
+html[data-theme=gibi] .btn.fui.on{background:#e62429}
+html[data-theme=gibi] .tempo span{border:2px solid #111;background:#ffd400;color:#111;font-weight:700;transform:rotate(-1deg)}
+html[data-theme=gibi] textarea{font:700 16px/1.3 var(--type);border:3px solid #111;background:#fff}
+html[data-theme=gibi] #peek{border:3px solid #111;border-radius:0;box-shadow:5px 5px 0 #111;background:#fff}
+html[data-theme=gibi] #peek .t{font-family:var(--hand);font-size:22px}
+html[data-theme=gibi] #peek .x{border:3px solid #111;background:#ffd400}
+html[data-theme=gibi] #toast{background:#fff;color:#111;border:3px solid #111;border-radius:22px;font:400 21px var(--hand);letter-spacing:.5px;box-shadow:3px 3px 0 #111}
+html[data-theme=gibi] #me{background:#e62429;border:3px solid #111;box-shadow:3px 3px 0 #111}
+html[data-theme=gibi] .mapbtns button{border:3px solid #111;border-radius:0;font:400 17px var(--hand);background:#ffd400;transform:skew(-6deg)}
+html[data-theme=gibi] .leaflet-bar a{border-radius:0!important;background:#fff!important}
+@media (max-width:420px){
+ html[data-theme=gibi] header{flex-wrap:wrap;align-items:flex-start;gap:6px}
+ html[data-theme=gibi] header>div:first-child{flex:1 1 100%}
+ html[data-theme=gibi] .top-r{flex:1 1 100%;flex-direction:row;justify-content:space-between;align-items:center}
+ html[data-theme=gibi] #count{white-space:normal;font-size:17px;line-height:1.05;flex:1 1 auto;min-width:0}
+ html[data-theme=gibi] .hbtns{flex:none}
+ html[data-theme=gibi] .kicker{font-size:13px;max-width:100%}
+ html[data-theme=gibi] header h1{font-size:26px;margin-top:6px}
+ html[data-theme=gibi] #loc{font-size:15px;padding:9px 8px}
+}
 </style>
 
 
 </head>
 <body>
 <div id="app">
-  <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><div class="hbtns"><button id="help" aria-label="Como instalar e ajuda">?</button><button id="loc">Perto de mim</button></div></div></header>
+  <header><div><span class="kicker">nossa primeira viagem de casal</span><h1>São Thomé das Letras</h1></div><div class="top-r"><span id="count"></span><div class="hbtns"><button id="theme" aria-label="Mudar a aparência: caderno ou gibi"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg></button><button id="help" aria-label="Como instalar e ajuda">?</button><button id="loc">Perto de mim</button></div></div></header>
   <div class="prog"><i id="progbar"></i></div>
   <div class="chips" id="chips"></div>
   <div id="mapwrap"><div id="map"></div><div class="mapbtns"><button id="fit">Ver tudo</button><button id="ctr">Centro</button></div><button id="me" aria-label="Ir para a minha localização" title="Onde estou"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg></button></div>
@@ -274,7 +341,15 @@ let cat="all",pos=null,markers={},status={},notes={};
 try{status=JSON.parse(localStorage.getItem("stl-status2")||"{}");notes=JSON.parse(localStorage.getItem("stl-notes")||"{}")}catch(e){}
 const save=()=>{try{localStorage.setItem("stl-status2",JSON.stringify(status));localStorage.setItem("stl-notes",JSON.stringify(notes))}catch(e){}};
 const BAD=["shangrila","bromelias","esmeraldas","amendoim","labirinto","gsobradinho","sobradinho","quitanda"];
-const COL={mistico:"#8e6aa8",mirante:"#c9822f",gruta:"#6f6a63",agua:"#4a7f94",comer:"#5f7a3c",cafe:"#a0522d",bar:"#d23a7a",all:"#2a2420"};
+const COLS={
+ caderno:{mistico:"#8e6aa8",mirante:"#c9822f",gruta:"#6f6a63",agua:"#4a7f94",comer:"#5f7a3c",cafe:"#a0522d",bar:"#d23a7a",all:"#2a2420"},
+ gibi:{mistico:"#8a2be2",mirante:"#ff8c00",gruta:"#444b5a",agua:"#0a86e8",comer:"#17a34a",cafe:"#c1440e",bar:"#e6197a",all:"#111111"}};
+const TX={
+ caderno:{kick:"nossa primeira viagem de casal",count:(n,t)=>`${n} de ${t} descobertos`,stamp:"JÁ FUI",want:"Quero ir",done:"Já fui",miniDone:"fui",miniWant:"quero",ok:"Comum / vale a pena",no:"Atenção / não rola",lore:"Lenda",nota:"Nota de nós dois",ph:"escreva uma lembrança depois de ir...",tips:"Dicas de quem já foi",go:"Até lá",visit:"Passeio",tDone:"Carimbado! Já fui",tWant:"Na lista de quero ir",on:"Modo caderno ligado"},
+ gibi:{kick:"edição nº 1 · a primeira aventura do casal",count:(n,t)=>`${n} de ${t} missões cumpridas`,stamp:"MISSÃO CUMPRIDA!",want:"Próxima missão",done:"Missão cumprida",miniDone:"feito!",miniWant:"próxima",ok:"Superpoderes (vale a pena)",no:"Vilões (atenção)",lore:"Origem (a lenda)",nota:"Balão de fala dos dois",ph:"o que vocês disseram nessa cena...",tips:"Manual do herói",go:"Deslocamento",visit:"Duração da missão",tDone:"POW! Missão cumprida!",tWant:"Próxima missão marcada!",on:"POW! Modo gibi ligado"}};
+let THEME="caderno";try{THEME=localStorage.getItem("stl-theme")||"caderno"}catch(e){}
+if(!COLS[THEME])THEME="caderno";
+let COL=COLS[THEME];const tx=()=>TX[THEME];
 const G={
 all:'<path d="M12 3l2.5 6 6.5.5-5 4.3 1.6 6.4L12 17l-5.6 3.2L8 13.8 3 9.5 9.5 9Z"/>',
 mistico:'<path d="M12 2l6 7-6 13-6-13Z M6 9h12 M12 2l-2 7 2 13 2-13"/>',
@@ -291,7 +366,7 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,classNa
 L.control.zoom({position:"topright"}).addTo(map);
 const cluster=(L.markerClusterGroup?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:45,disableClusteringAtZoom:17,iconCreateFunction:c=>L.divIcon({className:"",html:`<div class="mc">${c.getChildCount()}</div>`,iconSize:[38,38]})}):L.layerGroup()).addTo(map);
 L.marker(CHALE,{icon:L.divIcon({className:"",html:'<div class="tag home">'+svg("casa")+'</div>',iconSize:[34,34],iconAnchor:[17,30]})}).addTo(map).on("click",()=>toast("Nosso chalé (posição aproximada)"));
-const meMarker=L.marker(CENTER,{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[16,16]}),interactive:false});
+const meMarker=L.marker(CENTER,{icon:L.divIcon({className:"",html:'<div class="me"><i>você</i></div>',iconSize:[22,22],iconAnchor:[11,11]}),interactive:false});
 
 function km(a,b){const R=6371,t=x=>x*Math.PI/180,dl=t(b[0]-a[0]),dn=t(b[1]-a[1]);
  const h=Math.sin(dl/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
@@ -301,7 +376,7 @@ function eta(p){if(!p.ll)return p.m?{m:p.m,mode:"de carro",ref:"do centro"}:null
  if(d<1.2)return{m:Math.max(2,Math.round(d*13)),mode:"a pé",ref:from()};
  const v=BAD.includes(p.id)?28:35;return{m:Math.max(5,Math.round(d*1.5/v*12)*5),mode:"de carro",ref:from()}}
 function tempoShort(p){const e=eta(p);return (e?" · ~"+e.m+" min "+e.mode:"")+(p.t?" · visita ~"+p.t:"")}
-function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>Até lá: ~${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>Passeio: ~${esc(p.t)}</span>`:""}</div>`}
+function tempoBlock(p){const e=eta(p);return `<div class="tempo">${e?`<span>${tx().go}: ~${e.m} min ${e.mode} (${e.ref})</span>`:""}${p.t?`<span>${tx().visit}: ~${esc(p.t)}</span>`:""}</div>`}
 const fmt=k=>k<1?Math.round(k*1000)+" m":k.toFixed(1).replace(".",",")+" km";
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const st=id=>status[id]&&status[id].s;
@@ -309,7 +384,7 @@ const st=id=>status[id]&&status[id].s;
 function icon(p){const s=st(p.id);
  return L.divIcon({className:"",html:`<div class="tag ${s==="fui"?"done":s==="quero"?"want":""}" style="--c:${COL[p.c]}">${svg(p.c)}</div>`,iconSize:[34,34],iconAnchor:[17,30]})}
 
-function count(){const n=Object.values(status).filter(v=>v.s==="fui").length;document.getElementById("count").textContent=`${n} de ${P.length} descobertos`;document.getElementById("progbar").style.width=(100*n/P.length)+"%"}
+function count(){const n=Object.values(status).filter(v=>v.s==="fui").length;document.getElementById("count").textContent=tx().count(n,P.length);document.getElementById("progbar").style.width=(100*n/P.length)+"%"}
 let tt;function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),1800)}
 const gmaps=p=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(p.n+" São Thomé das Letras MG");
 function closePeek(){document.getElementById("peek").classList.remove("open")}
@@ -324,10 +399,10 @@ function render(){
  cluster.clearLayers();
  items.filter(p=>p.ll).forEach(p=>cluster.addLayer(L.marker(p.ll,{icon:icon(p)}).on("click",()=>peek(p.id))));
  document.getElementById("list").innerHTML=items.map((p,i)=>{const s=st(p.id);
-  const right=s==="fui"?`<span class="mini">fui</span>`:s==="quero"?`<span class="mini q">quero</span>`:p.ll?`<span class="dist">${fmt(dist(p))}</span>`:"";
+  const right=s==="fui"?`<span class="mini">${tx().miniDone}</span>`:s==="quero"?`<span class="mini q">${tx().miniWant}</span>`:p.ll?`<span class="dist">${fmt(dist(p))}</span>`:"";
   return `<div class="page" style="--r:${i%2?.5:-.5}deg;--c:${COL[p.c]}" onclick="openSheet('${p.id}')"><div class="t">${svg(p.c)}<b>${esc(p.n)}</b>${right}</div>
   <div class="s">${esc(p.d)}${tempoShort(p)}${p.r?" · ★ "+p.r:""}${p.p?" · "+p.p:""}${BAD.includes(p.id)?'<span class="road">estrada de terra</span>':""}</div></div>`}).join("")
-  +`<div class="page tips"><div class="t"><b>Dicas de quem já foi</b></div><ul style="margin-top:6px">${TIPS.map(t=>`<li>${t.replace(/^\S+\s/,"")}</li>`).join("")}</ul></div>`;
+  +`<div class="page tips"><div class="t"><b>${tx().tips}</b></div><ul style="margin-top:6px">${TIPS.map(t=>`<li>${t.replace(/^\S+\s/,"")}</li>`).join("")}</ul></div>`;
  count();
 }
 const list=(t,a,k)=>a&&a.length?`<h3 class="${k}">${t}</h3><ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:"";
@@ -338,23 +413,23 @@ function openSheet(id,keep){
  const sh=document.getElementById("sheet");sh.style.setProperty("--c",COL[p.c]);
  const q=encodeURIComponent(p.n+" São Thomé das Letras MG");
  document.getElementById("sheetBody").innerHTML=`
-  ${s==="fui"?`<div class="stamp">JÁ FUI<small>${esc(status[id].d||"")}</small></div>`:""}
+  ${s==="fui"?`<div class="stamp">${tx().stamp}<small>${esc(status[id].d||"")}</small></div>`:""}
   <h2>${esc(p.n)}</h2>
   <div class="meta">${esc(p.d)}${p.ll?" · "+fmt(dist(p))+" "+from():""}${p.r?" · ★ "+p.r:""}${p.p?" · "+p.p:""}<br>Horário: ${esc(p.h)}</div>${tempoBlock(p)}
   <div>${esc(p.s)}</div>
   ${p.how?`<h3 class="how">Como chegar</h3><div>${esc(p.how)}</div>`:""}
-  ${list("Comum / vale a pena",p.ok,"ok")}
-  ${list("Atenção / não rola",p.no,"no")}
-  ${p.lore?`<h3 class="lore">Lenda</h3><div>${esc(p.lore)}</div>`:""}
-  <h3 class="nota">Nota de nós dois</h3>
-  <textarea id="nota" placeholder="escreva uma lembrança depois de ir...">${esc(notes[id]||"")}</textarea>
+  ${list(tx().ok,p.ok,"ok")}
+  ${list(tx().no,p.no,"no")}
+  ${p.lore?`<h3 class="lore">${tx().lore}</h3><div>${esc(p.lore)}</div>`:""}
+  <h3 class="nota">${tx().nota}</h3>
+  <textarea id="nota" placeholder="${tx().ph}">${esc(notes[id]||"")}</textarea>
   <div class="btns">
    <a class="btn go" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${q}">Como chegar</a>
    <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Ver no Google Maps</a>
   </div>
   <div class="btns">
-   <button class="btn ${s==="quero"?"on":""}" onclick="mark('${id}','quero')">Quero ir</button>
-   <button class="btn fui ${s==="fui"?"on":""}" onclick="mark('${id}','fui')">Já fui</button>
+   <button class="btn ${s==="quero"?"on":""}" onclick="mark('${id}','quero')">${tx().want}</button>
+   <button class="btn fui ${s==="fui"?"on":""}" onclick="mark('${id}','fui')">${tx().done}</button>
   </div>
   <div class="note">${!p.ll?"Este lugar ainda não tem pino no mapa: use o botão Como chegar.":p.ap?"Pino aproximado: use Como chegar para a rota certa.":"Pino conferido no OpenStreetMap."} Preços e horários mudam: confirme no local.</div>`;
  document.getElementById("nota").oninput=e=>{notes[id]=e.target.value;save()};
@@ -369,7 +444,7 @@ function closeSheet(){document.getElementById("sheet").classList.remove("open");
 addEventListener("popstate",()=>{const was=guardOn;guardOn=false;
  if(sheetOpen){closeSheet()}else if(was){try{history.back()}catch(e){}}});
 function mark(id,v){const was=st(id)===v;if(was)delete status[id];else status[id]={s:v,d:new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})};save();render();openSheet(id,true);
- toast(was?"Desmarcado":v==="fui"?"Carimbado! Já fui":"Na lista de quero ir")}
+ toast(was?"Desmarcado":v==="fui"?tx().tDone:tx().tWant)}
 
 function openHelp(){const sh=document.getElementById("sheet");sh.style.setProperty("--c","#ff3d8b");closePeek();
  const ua=navigator.userAgent;
@@ -390,7 +465,8 @@ function openHelp(){const sh=document.getElementById("sheet");sh.style.setProper
  if(!guardOn){guardOn=true;try{history.pushState({g:1},"")}catch(e){guardOn=false}}}
 document.getElementById("help").onclick=openHelp;
 const chips=document.getElementById("chips");
-chips.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip ${k===cat?"on":""}" data-k="${k}" style="--c:${COL[k]}">${svg(k)}${v[0]}</button>`).join("");
+function buildChips(){chips.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="chip ${k===cat?"on":""}" data-k="${k}" style="--c:${COL[k]}">${svg(k)}${v[0]}</button>`).join("")}
+buildChips();
 chips.onclick=e=>{const k=e.target.closest(".chip")?.dataset.k;if(!k)return;cat=k;
  chips.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.k===k));closeSheet();render()};
 
@@ -429,7 +505,13 @@ document.getElementById("me").onclick=()=>{
 };
 document.getElementById("fit").onclick=()=>map.fitBounds(L.latLngBounds(P.filter(p=>p.ll).map(p=>p.ll)).pad(.1));
 document.getElementById("ctr").onclick=()=>map.setView(CENTER,15);
-render();
+function applyTheme(n,quiet){THEME=n;COL=COLS[n];document.documentElement.setAttribute("data-theme",n);
+ try{localStorage.setItem("stl-theme",n)}catch(e){}
+ document.querySelector(".kicker").textContent=tx().kick;
+ const m=document.querySelector("meta[name=theme-color]");if(m)m.content=n==="gibi"?"#fff3c4":"#efe6d3";
+ closeSheet();closePeek();buildChips();render();if(!quiet)toast(tx().on)}
+document.getElementById("theme").onclick=()=>applyTheme(THEME==="gibi"?"caderno":"gibi");
+applyTheme(THEME,true);
 locate(true);
 const fixMap=()=>map.invalidateSize();addEventListener("resize",fixMap);addEventListener("orientationchange",()=>setTimeout(fixMap,300));addEventListener("pageshow",fixMap);[200,800,2000].forEach(t=>setTimeout(fixMap,t));
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
